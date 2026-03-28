@@ -154,6 +154,14 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
   // Build visible rows with collapse logic
   type RowItem = { type: 'slot'; time: string; index: number } | { type: 'collapsed'; range: { start: number; end: number; key: string } };
+
+  const getTimeRange = (slotIdx: number) => {
+    const start = TIME_SLOTS[slotIdx];
+    const nextIdx = slotIdx + 1;
+    const end = nextIdx < 48 ? TIME_SLOTS[nextIdx] : '00:00';
+    return `${start}–${end}`;
+  };
+
   const visibleRows = useMemo(() => {
     const rows: RowItem[] = [];
     let skipUntil = -1;
@@ -199,7 +207,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
                     <td className="sticky left-0 z-10 p-1 font-mono text-[10px] border-r whitespace-nowrap" style={{ backgroundColor: sleepColor, color: 'white' }}>
                       <div className="flex items-center gap-1">
                         <ChevronRight className="w-3 h-3" />
-                        {TIME_SLOTS[range.start]}–{TIME_SLOTS[Math.min(range.end + 1, 47)]}
+                         {TIME_SLOTS[range.start]}–{TIME_SLOTS[Math.min(range.end + 1, 47)]}
                       </div>
                     </td>
                     {DAYS.map(day => (
@@ -226,7 +234,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
                           <ChevronDown className="w-3 h-3" />
                         </button>
                       )}
-                      {time}
+                       {getTimeRange(slotIdx)}
                     </div>
                   </td>
                   {DAYS.map((day, dayIdx) => {
