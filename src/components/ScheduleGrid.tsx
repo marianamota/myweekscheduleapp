@@ -1,5 +1,6 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useMemo } from 'react';
 import { DAYS, TIME_SLOTS, ScheduleData, Category, getCategoryColor } from '@/lib/schedule-types';
+import { ChevronDown, ChevronRight } from 'lucide-react';
 
 interface Props {
   schedule: ScheduleData;
@@ -14,6 +15,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
   const [selectionEnd, setSelectionEnd] = useState<{ day: number; slot: number } | null>(null);
   const [showAutocomplete, setShowAutocomplete] = useState<{ day: string; slot: number } | null>(null);
   const [filterText, setFilterText] = useState('');
+  const [collapsedSleepRanges, setCollapsedSleepRanges] = useState<Set<string>>(new Set());
   const inputRef = useRef<HTMLInputElement>(null);
 
   const catNames = categories.map(c => c.name).filter(Boolean);
@@ -101,8 +103,72 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
   const filteredCats = catNames.filter(n => n.toLowerCase().includes(filterText.toLowerCase()));
 
-  // Show only times from 5:00 to 23:30 by default, with option to show all
-  const visibleSlots = TIME_SLOTS.map((t, i) => ({ time: t, index: i }));
+  // Detect contiguous ranges where ALL days are "Sleeping"
+  const sleepRanges = useMemo(() => {
+    const ranges: { start: number; end: number; key: string }[] = [];
+    let rangeStart: number | null = null;
+    for (let i = 0; i < 48; i++) {
+      const allSleeping = DAYS.every(day => schedule[day][i] === 'Sleeping');
+      if (allSleeping) {
+        if (rangeStart === null) rangeStart = i;
+      } else {
+        if (rangeStart !== null) {
+          const key = `${rangeStart}-${i - 1}`;
+          ranges.push({ start: rangeStart, end: i - 1, key });
+          rangeStart = null;
+        }
+      }
+    }
+    if (rangeStart !== null) {
+      const key = `${rangeStart}-47`;
+      ranges.push({ start: rangeStart, end: 47, key });
+    }
+    return ranges;
+  }, [schedule]);
+
+  // Auto-collapse sleep ranges that have 3+ slots
+  const effectiveCollapsed = useMemo(() => {
+    const set = new Set(collapsedSleepRanges);
+    // Auto-collapse new ranges on first detection
+    for (const r of sleepRanges) {
+      if (r.end - r.start >= 2 && !set.has(`expanded-${r.key}`)) {
+        set.add(r.key);
+      }
+    }
+    return set;
+  }, [sleepRanges, collapsedSleepRanges]);
+
+  const toggleSleepRange = (key: string) => {
+    setCollapsedSleepRanges(prev => {
+      const next = new Set(prev);
+      if (effectiveCollapsed.has(key)) {
+        next.delete(key);
+        next.add(`expanded-${key}`);
+      } else {
+        next.delete(`expanded-${key}`);
+        next.add(key);
+      }
+      return next;
+    });
+  };
+
+  // Build visible rows with collapse logic
+  type RowItem = { type: 'slot'; time: string; index: number } | { type: 'collapsed'; range: { start: number; end: number; key: string } };
+  const visibleRows = useMemo(() => {
+    const rows: RowItem[] = [];
+    let skipUntil = -1;
+    for (let i = 0; i < 48; i++) {
+      if (i <= skipUntil) continue;
+      const range = sleepRanges.find(r => r.start === i);
+      if (range && effectiveCollapsed.has(range.key)) {
+        rows.push({ type: 'collapsed', range });
+        skipUntil = range.end;
+      } else {
+        rows.push({ type: 'slot', time: TIME_SLOTS[i], index: i });
+      }
+    }
+    return rows;
+  }, [sleepRanges, effectiveCollapsed]);
 
   return (
     <div className="relative" onMouseUp={handleMouseUp}>
@@ -119,36 +185,76 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
             </tr>
           </thead>
           <tbody>
-            {visibleSlots.map(({ time, index: slotIdx }) => (
-              <tr key={time} className={slotIdx % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
-                <td className="sticky left-0 z-10 bg-inherit p-1 text-muted-foreground font-mono text-[10px] border-r whitespace-nowrap">
-                  {time}
-                </td>
-                {DAYS.map((day, dayIdx) => {
-                  const value = schedule[day][slotIdx];
-                  const bgColor = value ? getCategoryColor(value, categories) : 'transparent';
-                  const selected = isInSelection(dayIdx, slotIdx);
-                  const isActive = showAutocomplete?.day === day && showAutocomplete?.slot === slotIdx;
-
-                  return (
-                    <td
-                      key={day}
-                      className={`p-0 border-r border-b cursor-pointer transition-all ${selected ? 'ring-2 ring-inset ring-primary' : ''} ${value ? 'cell-filled' : 'hover:bg-muted/50'}`}
-                      style={{ backgroundColor: bgColor }}
-                      tabIndex={0}
-                      onMouseDown={() => handleMouseDown(dayIdx, slotIdx)}
-                      onMouseEnter={() => handleMouseEnter(dayIdx, slotIdx)}
-                      onClick={() => handleCellClick(day, slotIdx)}
-                      onKeyDown={(e) => handleKeyDown(e, day, slotIdx)}
-                    >
-                      <div className="h-6 flex items-center justify-center text-[10px] font-medium" style={{ color: value ? 'white' : undefined }}>
-                        {value && !isActive ? value : ''}
+            {visibleRows.map((row) => {
+              if (row.type === 'collapsed') {
+                const { range } = row;
+                const slotCount = range.end - range.start + 1;
+                const sleepColor = getCategoryColor('Sleeping', categories);
+                return (
+                  <tr
+                    key={`collapsed-${range.key}`}
+                    className="cursor-pointer hover:opacity-90 transition-opacity"
+                    onClick={() => toggleSleepRange(range.key)}
+                  >
+                    <td className="sticky left-0 z-10 p-1 font-mono text-[10px] border-r whitespace-nowrap" style={{ backgroundColor: sleepColor, color: 'white' }}>
+                      <div className="flex items-center gap-1">
+                        <ChevronRight className="w-3 h-3" />
+                        {TIME_SLOTS[range.start]}–{TIME_SLOTS[Math.min(range.end + 1, 47)]}
                       </div>
                     </td>
-                  );
-                })}
-              </tr>
-            ))}
+                    {DAYS.map(day => (
+                      <td key={day} className="p-0 border-r border-b" style={{ backgroundColor: sleepColor }}>
+                        <div className="h-6 flex items-center justify-center text-[10px] font-medium" style={{ color: 'white' }}>
+                          {day === 'Monday' ? `Sleeping (${(slotCount / 2).toFixed(1)}h)` : ''}
+                        </div>
+                      </td>
+                    ))}
+                  </tr>
+                );
+              }
+
+              const { time, index: slotIdx } = row;
+              // Check if this slot is the first in an expanded sleep range
+              const expandedRange = sleepRanges.find(r => r.start === slotIdx && !effectiveCollapsed.has(r.key));
+
+              return (
+                <tr key={time} className={slotIdx % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
+                  <td className="sticky left-0 z-10 bg-inherit p-1 text-muted-foreground font-mono text-[10px] border-r whitespace-nowrap">
+                    <div className="flex items-center gap-1">
+                      {expandedRange && (
+                        <button onClick={() => toggleSleepRange(expandedRange.key)} className="text-muted-foreground hover:text-foreground">
+                          <ChevronDown className="w-3 h-3" />
+                        </button>
+                      )}
+                      {time}
+                    </div>
+                  </td>
+                  {DAYS.map((day, dayIdx) => {
+                    const value = schedule[day][slotIdx];
+                    const bgColor = value ? getCategoryColor(value, categories) : 'transparent';
+                    const selected = isInSelection(dayIdx, slotIdx);
+                    const isActive = showAutocomplete?.day === day && showAutocomplete?.slot === slotIdx;
+
+                    return (
+                      <td
+                        key={day}
+                        className={`p-0 border-r border-b cursor-pointer transition-all ${selected ? 'ring-2 ring-inset ring-primary' : ''} ${value ? 'cell-filled' : 'hover:bg-muted/50'}`}
+                        style={{ backgroundColor: bgColor }}
+                        tabIndex={0}
+                        onMouseDown={() => handleMouseDown(dayIdx, slotIdx)}
+                        onMouseEnter={() => handleMouseEnter(dayIdx, slotIdx)}
+                        onClick={() => handleCellClick(day, slotIdx)}
+                        onKeyDown={(e) => handleKeyDown(e, day, slotIdx)}
+                      >
+                        <div className="h-6 flex items-center justify-center text-[10px] font-medium" style={{ color: value ? 'white' : undefined }}>
+                          {value && !isActive ? value : ''}
+                        </div>
+                      </td>
+                    );
+                  })}
+                </tr>
+              );
+            })}
           </tbody>
         </table>
       </div>
