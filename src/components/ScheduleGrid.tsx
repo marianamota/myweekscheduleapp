@@ -154,6 +154,14 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
   // Build visible rows with collapse logic
   type RowItem = { type: 'slot'; time: string; index: number } | { type: 'collapsed'; range: { start: number; end: number; key: string } };
+
+  const getTimeRange = (slotIdx: number) => {
+    const start = TIME_SLOTS[slotIdx];
+    const nextIdx = slotIdx + 1;
+    const end = nextIdx < 48 ? TIME_SLOTS[nextIdx] : '00:00';
+    return `${start}–${end}`;
+  };
+
   const visibleRows = useMemo(() => {
     const rows: RowItem[] = [];
     let skipUntil = -1;
