@@ -215,7 +215,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
                     <td className="sticky left-0 z-10 p-1 font-mono text-[10px] border-r whitespace-nowrap" style={{ backgroundColor: sleepColor, color: 'white' }}>
                       <div className="flex items-center gap-1">
                         <ChevronRight className="w-3 h-3" />
-                         {TIME_SLOTS[range.start]}–{TIME_SLOTS[Math.min(range.end + 1, 47)]}
+                         {format12h(TIME_SLOTS[range.start])} – {format12h(TIME_SLOTS[Math.min(range.end + 1, 47)])}
                       </div>
                     </td>
                     {DAYS.map(day => (
