@@ -65,6 +65,7 @@ export default function Index() {
             <div>
               <p className="text-sm text-muted-foreground mb-2">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
               <ScheduleGrid schedule={schedule} categories={categories} onChange={setSchedule} />
+            </div>
 
             <div className="text-center">
               <Button onClick={() => setTab('viz')} size="lg" className="gap-2">
