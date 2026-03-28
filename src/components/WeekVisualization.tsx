@@ -87,47 +87,47 @@ export default function WeekVisualization({ schedule, categories }: Props) {
 
       <div ref={vizRef} className="bg-card rounded-xl p-6 space-y-6" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
         <h3 className="text-xl font-bold text-foreground text-center">My Week</h3>
-        {/* Stacked bar chart */}
-        <div className="space-y-1">
-          {DAYS.map((day, i) => {
-            const blocks = buildDayBlocks(day);
-            return (
-              <motion.div
-                key={day}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.05 }}
-                className="flex h-10 rounded-sm overflow-hidden"
-              >
-                {blocks.map((block, j) => (
-                  <div
-                    key={j}
-                    className="h-full flex items-center justify-center text-[10px] font-semibold overflow-hidden"
-                    style={{
-                      width: `${(block.count / 48) * 100}%`,
-                      backgroundColor: getCategoryColor(block.category, categories),
-                      color: 'white',
-                    }}
-                    title={`${block.category} (${(block.count / 2).toFixed(1)}h)`}
-                  >
-                    {block.count > 3 ? block.category : ''}
-                  </div>
-                ))}
-              </motion.div>
-            );
-          })}
-        </div>
+        {/* Column-based visualisation — days as columns, time slots as rows */}
+        <div className="flex gap-0">
+          {/* Chart area */}
+          <div className="flex flex-1 gap-0">
+            {DAYS.map((day, i) => {
+              const blocks = buildDayBlocks(day);
+              return (
+                <motion.div
+                  key={day}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex-1 flex flex-col"
+                  style={{ minHeight: 400 }}
+                >
+                  {blocks.map((block, j) => (
+                    <div
+                      key={j}
+                      style={{
+                        height: `${(block.count / 48) * 100}%`,
+                        backgroundColor: getCategoryColor(block.category, categories),
+                      }}
+                      title={`${day}: ${block.category} (${(block.count / 2).toFixed(1)}h)`}
+                    />
+                  ))}
+                </motion.div>
+              );
+            })}
+          </div>
 
-        {/* Legend */}
-        <div className="flex flex-wrap gap-4 justify-center pt-2">
-          {stats.map(stat => (
-            <div key={stat.name} className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold" style={{ backgroundColor: stat.color, color: 'white' }}>
-                {stat.percentage}%
+          {/* Legend on the right */}
+          <div className="flex flex-col gap-3 justify-center pl-6">
+            {stats.map(stat => (
+              <div key={stat.name} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style={{ backgroundColor: stat.color, color: 'white' }}>
+                  {stat.percentage}%
+                </div>
+                <span className="text-sm font-medium text-foreground whitespace-nowrap">{stat.name}</span>
               </div>
-              <span className="text-sm font-medium text-foreground">{stat.name}</span>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
       </div>
     </div>
