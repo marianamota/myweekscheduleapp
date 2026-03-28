@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { DAYS, ScheduleData, Category, DEFAULT_CATEGORIES, createEmptySchedule, createDefaultSleepSettings, applySleepToSchedule, SleepSettings } from '@/lib/schedule-types';
 import ScheduleGrid from '@/components/ScheduleGrid';
@@ -84,6 +85,12 @@ export default function Index() {
           </motion.div>
         )}
       </main>
+
+      <footer className="border-t bg-card mt-12 py-4 text-center">
+        <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
+          Privacy Policy
+        </Link>
+      </footer>
 
       <FeedbackWidget />
     </div>
