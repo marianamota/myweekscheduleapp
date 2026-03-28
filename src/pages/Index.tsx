@@ -57,12 +57,7 @@ export default function Index() {
             </div>
 
             <div>
-              <div className="flex items-center justify-between mb-1">
-                <h3 className="font-display font-semibold text-foreground">📅 Plan Your Week</h3>
-                <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive flex-shrink-0">
-                  Clear All
-                </Button>
-              </div>
+              <h3 className="font-display font-semibold text-foreground mb-1">📅 Plan Your Week</h3>
               <p className="text-sm text-muted-foreground">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
             </div>
 
@@ -71,9 +66,12 @@ export default function Index() {
               <ScheduleGrid schedule={schedule} categories={categories} onChange={setSchedule} />
             </div>
 
-            <div className="text-center">
+            <div className="flex items-center justify-between">
+              <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive">
+                Clear All
+              </Button>
               <Button onClick={() => setTab('viz')} size="lg" className="gap-2">
-                <BarChart3 className="w-5 h-5" /> See Visualization →
+                <BarChart3 className="w-5 h-5" /> See Visualisation →
               </Button>
             </div>
           </motion.div>
