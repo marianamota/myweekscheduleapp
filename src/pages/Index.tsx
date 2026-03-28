@@ -55,15 +55,15 @@ export default function Index() {
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
-            <div className="flex justify-end">
-              <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive">
+            <div className="flex items-center justify-between">
+              <p className="text-sm text-muted-foreground">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
+              <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive flex-shrink-0">
                 Clear All
               </Button>
             </div>
 
             {/* Grid */}
             <div>
-              <p className="text-sm text-muted-foreground mb-2">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
               <ScheduleGrid schedule={schedule} categories={categories} onChange={setSchedule} />
             </div>
 
