@@ -85,31 +85,29 @@ export default function WeekVisualization({ schedule, categories }: Props) {
         </div>
       </div>
 
-      <div ref={vizRef} className="bg-card rounded-2xl p-8 space-y-6 shadow-lg" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+      <div ref={vizRef} className="bg-card rounded-xl p-6 space-y-6" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
         <h3 className="text-xl font-bold text-foreground text-center">My Week</h3>
         {/* Column-based visualisation — days as columns, time slots as rows */}
         <div className="flex gap-0">
           {/* Chart area */}
-          <div className="flex flex-1 gap-1.5 rounded-2xl overflow-hidden">
+          <div className="flex flex-1 gap-0">
             {DAYS.map((day, i) => {
               const blocks = buildDayBlocks(day);
               return (
                 <motion.div
                   key={day}
-                  initial={{ opacity: 0, y: 20, scale: 0.95 }}
-                  animate={{ opacity: 1, y: 0, scale: 1 }}
-                  transition={{ delay: i * 0.06, type: 'spring', stiffness: 200, damping: 20 }}
-                  className="flex-1 flex flex-col gap-[2px]"
-                  style={{ minHeight: 420 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  className="flex-1 flex flex-col"
+                  style={{ minHeight: 400 }}
                 >
                   {blocks.map((block, j) => (
                     <div
                       key={j}
-                      className="rounded-lg transition-shadow hover:shadow-md"
                       style={{
                         height: `${(block.count / 48) * 100}%`,
                         backgroundColor: getCategoryColor(block.category, categories),
-                        boxShadow: '0 2px 8px -2px rgba(0,0,0,0.1)',
                       }}
                       title={`${day}: ${block.category} (${(block.count / 2).toFixed(1)}h)`}
                     />
@@ -120,23 +118,14 @@ export default function WeekVisualization({ schedule, categories }: Props) {
           </div>
 
           {/* Legend on the right */}
-          <div className="flex flex-col gap-3.5 justify-center pl-8">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.name}
-                initial={{ opacity: 0, x: 10 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.4 + i * 0.05 }}
-                className="flex items-center gap-3"
-              >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0 shadow-sm"
-                  style={{ backgroundColor: stat.color, color: 'white' }}
-                >
+          <div className="flex flex-col gap-3 justify-center pl-6">
+            {stats.map(stat => (
+              <div key={stat.name} className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-full flex items-center justify-center text-[11px] font-bold shrink-0" style={{ backgroundColor: stat.color, color: 'white' }}>
                   {stat.percentage}%
                 </div>
                 <span className="text-sm font-medium text-foreground whitespace-nowrap">{stat.name}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
