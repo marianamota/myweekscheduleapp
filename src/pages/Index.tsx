@@ -55,7 +55,7 @@ export default function Index() {
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
-            <div className="flex gap-3">
+            <div className="flex justify-end">
               <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive">
                 Clear All
               </Button>
