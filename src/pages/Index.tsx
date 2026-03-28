@@ -51,14 +51,11 @@ export default function Index() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             {/* Setup panels */}
             <div className="grid md:grid-cols-2 gap-4">
-              <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} />
+              <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} onApply={handleApplySleep} />
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleApplySleep} variant="outline" size="sm">
-                🌙 Apply Sleep Schedule
-              </Button>
               <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive">
                 Clear All
               </Button>
