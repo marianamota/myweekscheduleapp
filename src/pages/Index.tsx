@@ -30,8 +30,8 @@ export default function Index() {
       >
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">WeekViz</h1>
-            <p className="text-sm text-muted-foreground">Visualise how you spend your week</p>
+            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">My week visualisation</h1>
+            <p className="text-sm text-muted-foreground">Visualise how you spend your week.</p>
           </div>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
