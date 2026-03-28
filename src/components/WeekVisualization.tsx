@@ -18,7 +18,7 @@ export default function WeekVisualization({ schedule, categories }: Props) {
     if (!vizRef.current) return;
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
     const link = document.createElement('a');
-    link.download = 'my-week-visualized.png';
+    link.download = 'my-week-visualised.png';
     link.href = dataUrl;
     link.click();
   };
@@ -30,7 +30,7 @@ export default function WeekVisualization({ schedule, categories }: Props) {
       const blob = await (await fetch(dataUrl)).blob();
       const file = new File([blob], 'my-week.png', { type: 'image/png' });
       if (navigator.share) {
-        await navigator.share({ files: [file], title: 'My Week Visualized' });
+        await navigator.share({ files: [file], title: 'My Week Visualised' });
       } else {
         handleDownload();
       }
@@ -74,7 +74,7 @@ export default function WeekVisualization({ schedule, categories }: Props) {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-2xl font-bold text-foreground">Your Week, Visualized</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">Your Week, Visualised</h2>
         <div className="flex gap-2">
           <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
             <Download className="w-4 h-4" /> Save

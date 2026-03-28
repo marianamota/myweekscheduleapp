@@ -31,7 +31,7 @@ export default function Index() {
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
             <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">WeekViz</h1>
-            <p className="text-sm text-muted-foreground">Visualize how you spend your week</p>
+            <p className="text-sm text-muted-foreground">Visualise how you spend your week</p>
           </div>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
@@ -39,7 +39,7 @@ export default function Index() {
                 <CalendarDays className="w-4 h-4" /> Schedule
               </TabsTrigger>
               <TabsTrigger value="viz" className="gap-1.5">
-                <BarChart3 className="w-4 h-4" /> Visualize
+                <BarChart3 className="w-4 h-4" /> Visualise
               </TabsTrigger>
             </TabsList>
           </Tabs>
