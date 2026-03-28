@@ -58,6 +58,10 @@ export function applySleepToSchedule(schedule: ScheduleData, settings: SleepSett
   const newSchedule = { ...schedule };
   for (const day of DAYS) {
     const slots = [...newSchedule[day]];
+    // Clear all existing sleep slots first
+    for (let i = 0; i < 48; i++) {
+      if (slots[i] === 'Sleeping') slots[i] = '';
+    }
     const { sleep, wake } = settings.sameEveryDay ? settings.default : settings.perDay[day];
     const sleepIdx = TIME_SLOTS.indexOf(sleep);
     const wakeIdx = TIME_SLOTS.indexOf(wake);
@@ -65,7 +69,6 @@ export function applySleepToSchedule(schedule: ScheduleData, settings: SleepSett
     // Mark sleep slots
     if (sleepIdx >= 0 && wakeIdx >= 0) {
       if (sleepIdx > wakeIdx) {
-        // Sleep crosses midnight: sleepIdx to 47, then 0 to wakeIdx-1
         for (let i = sleepIdx; i < 48; i++) {
           if (!slots[i]) slots[i] = 'Sleeping';
         }
