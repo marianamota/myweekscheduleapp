@@ -55,8 +55,15 @@ export default function Index() {
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div>
+              <div className="flex items-center justify-between mb-1">
+                <h3 className="font-display font-semibold text-foreground">📅 Plan Your Week</h3>
+                <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive flex-shrink-0">
+                  Clear All
+                </Button>
+              </div>
               <p className="text-sm text-muted-foreground">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
+            </div>
               <Button onClick={() => setSchedule(createEmptySchedule())} variant="outline" size="sm" className="text-destructive flex-shrink-0">
                 Clear All
               </Button>
