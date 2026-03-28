@@ -1,4 +1,5 @@
 import { DAYS, TIME_SLOTS, SleepSettings as SleepSettingsType } from '@/lib/schedule-types';
+import { Button } from '@/components/ui/button';
 import { Switch } from '@/components/ui/switch';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -6,11 +7,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 interface Props {
   settings: SleepSettingsType;
   onChange: (settings: SleepSettingsType) => void;
+  onApply: () => void;
 }
 
 const timeOptions = TIME_SLOTS.filter((_, i) => i % 2 === 0 || true); // all half hours
 
-export default function SleepSettingsPanel({ settings, onChange }: Props) {
+export default function SleepSettingsPanel({ settings, onChange, onApply }: Props) {
   return (
     <div className="bg-card rounded-lg border p-4 space-y-4">
       <h3 className="font-display font-semibold text-foreground">🌙 Sleep Schedule</h3>
@@ -44,6 +46,9 @@ export default function SleepSettingsPanel({ settings, onChange }: Props) {
           ))}
         </div>
       )}
+      <Button onClick={onApply} variant="outline" size="sm" className="w-full mt-2">
+        Apply Sleep Schedule
+      </Button>
     </div>
   );
 }
