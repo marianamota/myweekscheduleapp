@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { DAYS, ScheduleData, Category, getCategoryColor, getCategoryStats } from '@/lib/schedule-types';
 import { toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
@@ -14,11 +14,16 @@ interface Props {
 
 export default function WeekVisualization({ schedule, categories, screenTimeHours = 0, screenTimeMinutes = 0 }: Props) {
   const vizRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const stats = getCategoryStats(schedule, categories);
 
   const handleDownload = async () => {
     if (!vizRef.current) return;
+    setIsExporting(true);
+    // Wait for React to render the title/URL
+    await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
+    setIsExporting(false);
     const link = document.createElement('a');
     link.download = 'my-week-visualised.png';
     link.href = dataUrl;
@@ -140,8 +145,12 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
-        <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
-        <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
+        {isExporting && (
+          <>
+            <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+            <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
+          </>
+        )}
         <div className="flex gap-8">
           {/* Left: Day columns */}
           <div className="flex flex-1" style={{ minHeight: 420, gap: '1px' }}>
