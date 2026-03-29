@@ -88,7 +88,7 @@ export default function Index() {
 
         {tab === 'viz' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-            <WeekVisualization schedule={schedule} categories={categories} />
+            <WeekVisualization schedule={schedule} categories={categories} screenTimeHours={screenTimeHours} screenTimeMinutes={screenTimeMinutes} />
           </motion.div>
         )}
       </main>
