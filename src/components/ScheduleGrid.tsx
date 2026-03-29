@@ -7,9 +7,10 @@ interface Props {
   schedule: ScheduleData;
   categories: Category[];
   onChange: (schedule: ScheduleData) => void;
+  increment?: 30 | 60;
 }
 
-export default function ScheduleGrid({ schedule, categories, onChange }: Props) {
+export default function ScheduleGrid({ schedule, categories, onChange, increment = 30 }: Props) {
   const [copiedCell, setCopiedCell] = useState<string | null>(null);
   const [selecting, setSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState<{ day: number; slot: number } | null>(null);
