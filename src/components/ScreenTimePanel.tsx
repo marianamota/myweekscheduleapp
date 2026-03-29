@@ -13,7 +13,7 @@ export default function ScreenTimePanel({ hours, minutes, onChange }: Props) {
   return (
     <div className="bg-card rounded-lg border p-4 space-y-3">
       <div className="flex items-center gap-2">
-        <h3 className="font-display font-semibold text-foreground">📱 Phone Screen Time</h3>
+        <h3 className="font-display font-semibold text-foreground">📱 Phone screen time</h3>
         <TooltipProvider>
           <Tooltip>
             <TooltipTrigger asChild>
