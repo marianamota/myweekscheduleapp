@@ -70,11 +70,17 @@ export default function WeekVisualization({ schedule, categories }: Props) {
     );
   }
 
-  // Convert slots to hours
   const formatHours = (slots: number) => {
     const hours = slots / 2;
     return hours % 1 === 0 ? `${hours}h` : `${hours.toFixed(1)}h`;
   };
+
+  // Top 3 categories get big circles, rest go to legend
+  const topStats = stats.slice(0, 3);
+  const restStats = stats.slice(3);
+
+  // Circle sizes for the top 3
+  const circleSizes = [160, 130, 100];
 
   return (
     <div className="space-y-6">
@@ -90,41 +96,10 @@ export default function WeekVisualization({ schedule, categories }: Props) {
         </div>
       </div>
 
-      <div ref={vizRef} className="bg-card rounded-2xl p-8 space-y-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
-        {/* Title */}
-        <div className="text-center space-y-1">
-          <h3 className="text-2xl font-bold text-foreground">My Week</h3>
-          <p className="text-sm text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-            {formatHours(filledSlots)} scheduled out of 168h
-          </p>
-        </div>
-
-        {/* Stacked horizontal bar — full week overview */}
-        <div className="space-y-3">
-          <div className="h-10 rounded-full overflow-hidden flex shadow-sm">
-            {stats.map((stat, i) => (
-              <motion.div
-                key={stat.name}
-                initial={{ width: 0 }}
-                animate={{ width: `${stat.percentage}%` }}
-                transition={{ duration: 0.6, delay: i * 0.08, ease: 'easeOut' }}
-                style={{ backgroundColor: stat.color }}
-                className="relative group cursor-default"
-                title={`${stat.name}: ${stat.percentage}%`}
-              >
-                {stat.percentage >= 8 && (
-                  <span className="absolute inset-0 flex items-center justify-center text-xs font-bold text-white drop-shadow-sm">
-                    {stat.percentage}%
-                  </span>
-                )}
-              </motion.div>
-            ))}
-          </div>
-        </div>
-
-        {/* Day columns visualisation */}
-        <div className="space-y-3">
-          <div className="flex gap-1">
+      <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
+        <div className="flex gap-8">
+          {/* Left: Day columns */}
+          <div className="flex gap-1 flex-1" style={{ minHeight: 420 }}>
             {DAYS.map((day, i) => {
               const blocks = buildDayBlocks(day);
               return (
@@ -133,8 +108,8 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                   initial={{ opacity: 0, scaleY: 0 }}
                   animate={{ opacity: 1, scaleY: 1 }}
                   transition={{ delay: i * 0.06, duration: 0.4 }}
-                  className="flex-1 flex flex-col rounded-lg overflow-hidden"
-                  style={{ minHeight: 280, transformOrigin: 'bottom' }}
+                  className="flex-1 flex flex-col"
+                  style={{ transformOrigin: 'bottom' }}
                 >
                   {blocks.map((block, j) => (
                     <div
@@ -149,40 +124,73 @@ export default function WeekVisualization({ schedule, categories }: Props) {
               );
             })}
           </div>
-          <div className="flex gap-1">
-            {DAYS.map(day => (
-              <div key={day} className="flex-1 text-center">
-                <span className="text-xs font-medium text-muted-foreground">{day.slice(0, 3)}</span>
-              </div>
-            ))}
-          </div>
-        </div>
 
-        {/* Category breakdown */}
-        <div className="space-y-3">
-          {stats.map((stat, i) => (
-            <motion.div
-              key={stat.name}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.3 + i * 0.06 }}
-              className="flex items-center gap-3"
-            >
-              <div
-                className="w-4 h-4 rounded-full shrink-0"
-                style={{ backgroundColor: stat.color }}
-              />
-              <span className="text-sm font-medium text-foreground flex-1" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                {stat.name}
-              </span>
-              <span className="text-sm tabular-nums text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                {formatHours(stat.slots)}
-              </span>
-              <span className="text-sm font-bold tabular-nums text-foreground w-10 text-right">
-                {stat.percentage}%
-              </span>
-            </motion.div>
-          ))}
+          {/* Right: Category circles + legend */}
+          <div className="flex flex-col items-center justify-center gap-4" style={{ minWidth: 200 }}>
+            {/* Big circles for top categories */}
+            {topStats.map((stat, i) => (
+              <motion.div
+                key={stat.name}
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.3 + i * 0.12, type: 'spring', stiffness: 200 }}
+                className="rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg"
+                style={{
+                  width: circleSizes[i],
+                  height: circleSizes[i],
+                  backgroundColor: stat.color,
+                  border: i === 1 ? `3px solid ${topStats[0]?.color || stat.color}` : 'none',
+                }}
+              >
+                <span
+                  className="leading-none"
+                  style={{ fontSize: circleSizes[i] * 0.28 }}
+                >
+                  {stat.percentage}%
+                </span>
+                <span
+                  className="opacity-90"
+                  style={{
+                    fontSize: circleSizes[i] * 0.11,
+                    fontFamily: "'Open Sans', sans-serif",
+                  }}
+                >
+                  {stat.name}
+                </span>
+              </motion.div>
+            ))}
+
+            {/* Small legend for remaining categories */}
+            {restStats.length > 0 && (
+              <div className="mt-2 space-y-2">
+                {restStats.map((stat, i) => (
+                  <motion.div
+                    key={stat.name}
+                    initial={{ opacity: 0, x: 20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 + i * 0.06 }}
+                    className="flex items-center gap-2"
+                  >
+                    <div
+                      className="w-5 h-5 rounded-full shrink-0"
+                      style={{ backgroundColor: stat.color }}
+                    />
+                    <span
+                      className="text-sm tabular-nums font-bold text-foreground"
+                    >
+                      {stat.percentage}%
+                    </span>
+                    <span
+                      className="text-sm text-muted-foreground"
+                      style={{ fontFamily: "'Open Sans', sans-serif" }}
+                    >
+                      {stat.name}
+                    </span>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </div>
     </div>
