@@ -37,8 +37,8 @@ export default function Index() {
       >
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Time Well Spent</h1>
-            <p className="text-sm text-muted-foreground">See where your time really goes — and take control of it.</p>
+            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">How I spend my time</h1>
+            <p className="text-sm text-muted-foreground">See where your time really goes and take control of it.</p>
           </div>
           <Tabs value={tab} onValueChange={setTab}>
             <TabsList>
@@ -66,7 +66,7 @@ export default function Index() {
             </div>
 
             <div>
-              <h3 className="font-display font-semibold text-foreground mb-1">📅 Plan Your Week</h3>
+              <h3 className="font-display font-semibold text-foreground mb-1">📅 My typical week schedule</h3>
               <p className="text-sm text-muted-foreground">Click any slot to assign a category. Drag to select multiple. Ctrl+C / Ctrl+V to copy & paste.</p>
             </div>
 
@@ -95,7 +95,7 @@ export default function Index() {
 
       <footer className="border-t bg-card mt-12 py-6">
         <div className="container max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
-          <p>© 2026 Time Well Spent. To provide feedback about the app or if you have any questions, email <a href="mailto:myweekscheduleapp@gmail.com" className="underline underline-offset-4 hover:text-foreground transition-colors">myweekscheduleapp@gmail.com</a></p>
+          <p>© 2026 Mariana Morris. To provide feedback about the app or if you have any questions, email <a href="mailto:myweekscheduleapp@gmail.com" className="underline underline-offset-4 hover:text-foreground transition-colors">myweekscheduleapp@gmail.com</a></p>
           <Link to="/privacy" className="hover:text-foreground transition-colors underline underline-offset-4">
             Privacy Policy
           </Link>
