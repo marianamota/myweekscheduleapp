@@ -117,7 +117,9 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                       key={j}
                       style={{
                         height: `${(block.count / 48) * 100}%`,
-                        backgroundColor: getCategoryColor(block.category, categories),
+                        backgroundColor: block.category === '__empty__'
+                          ? 'hsl(var(--muted) / 0.3)'
+                          : getCategoryColor(block.category, categories),
                       }}
                     />
                   ))}
