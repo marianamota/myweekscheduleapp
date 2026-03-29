@@ -145,8 +145,12 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
-        <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
-        <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
+        {isExporting && (
+          <>
+            <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+            <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
+          </>
+        )}
         <div className="flex gap-8">
           {/* Left: Day columns */}
           <div className="flex flex-1" style={{ minHeight: 420, gap: '1px' }}>
