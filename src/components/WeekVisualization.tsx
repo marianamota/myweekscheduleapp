@@ -23,17 +23,54 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
   const [isExporting, setIsExporting] = useState(false);
   const stats = getCategoryStats(schedule, categories);
 
-  const handleDownload = async () => {
-    if (!vizRef.current) return;
+  const shareText = 'This is how I spend my time. Check how you spend your time on https://bit.ly/how-I-spend-my-time';
+
+  const generateImage = async (): Promise<string> => {
+    if (!vizRef.current) return '';
     setIsExporting(true);
-    // Wait for React to render the title/URL
     await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
     setIsExporting(false);
+    return dataUrl;
+  };
+
+  const handleDownload = async () => {
+    const dataUrl = await generateImage();
+    if (!dataUrl) return;
     const link = document.createElement('a');
     link.download = 'my-week-visualised.png';
     link.href = dataUrl;
     link.click();
+  };
+
+  const handleShare = async (platform: string) => {
+    const dataUrl = await generateImage();
+    if (!dataUrl) return;
+
+    // Try native share with image file if available
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], 'my-week-visualised.png', { type: 'image/png' });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ text: shareText, files: [file] });
+        return;
+      } catch { /* user cancelled or error, fall through */ }
+    }
+
+    // Fallback: copy image to clipboard and open platform with text
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    } catch { /* clipboard not supported */ }
+
+    const encoded = encodeURIComponent(shareText);
+    const urls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encoded}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encoded}&u=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
+      whatsapp: `https://wa.me/?text=${encoded}`,
+    };
+    if (urls[platform]) window.open(urls[platform], '_blank');
   };
 
 
