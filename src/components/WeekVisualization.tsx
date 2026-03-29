@@ -2,14 +2,7 @@ import { useRef, useState } from 'react';
 import { DAYS, ScheduleData, Category, getCategoryColor, getCategoryStats } from '@/lib/schedule-types';
 import { toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
-import { Download, Share2 } from 'lucide-react';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { toast } from 'sonner';
+import { Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -23,7 +16,7 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
   const vizRef = useRef<HTMLDivElement>(null);
   const stats = getCategoryStats(schedule, categories);
 
-  const shareText = 'This is how I spend my time. Check how you spend your time on https://bit.ly/how-I-spend-my-time';
+
 
   const generateImage = async (): Promise<string> => {
     if (!vizRef.current) return '';
@@ -45,43 +38,6 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     link.click();
   };
 
-  const handleShare = async (platform: string) => {
-    const dataUrl = await generateImage();
-    if (!dataUrl) return;
-
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], 'my-week-visualised.png', { type: 'image/png' });
-
-    // Native Web Share API — shares the actual image file
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({ text: shareText, files: [file] });
-        return;
-      } catch { /* user cancelled */ return; }
-    }
-
-    // Fallback for desktop: copy image to clipboard, then open platform
-    try {
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      toast.success('Image copied to clipboard — paste it into your post!');
-    } catch {
-      // If clipboard fails, trigger download so user has the file
-      const link = document.createElement('a');
-      link.download = 'my-week-visualised.png';
-      link.href = dataUrl;
-      link.click();
-      toast.info('Image downloaded — attach it to your post!');
-    }
-
-    const encoded = encodeURIComponent(shareText);
-    const urls: Record<string, string> = {
-      twitter: `https://twitter.com/intent/tweet?text=${encoded}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encoded}&u=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
-      whatsapp: `https://wa.me/?text=${encoded}`,
-    };
-    if (urls[platform]) window.open(urls[platform], '_blank');
-  };
 
 
   const buildDayBlocks = (day: typeof DAYS[number]) => {
@@ -192,46 +148,9 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-2xl font-bold text-foreground">Visualisation of my week</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
-            <Download className="w-4 h-4" /> Save
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Share2 className="w-4 h-4" /> Share
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleShare('twitter')}>
-                𝕏 (Twitter)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('facebook')}>
-                Facebook
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('linkedin')}>
-                LinkedIn
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
-                WhatsApp
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={async () => {
-                const dataUrl = await generateImage();
-                if (!dataUrl) return;
-                const blob = await (await fetch(dataUrl)).blob();
-                try {
-                  await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                  toast.success('Image copied to clipboard!');
-                } catch {
-                  navigator.clipboard.writeText(shareText);
-                  toast.success('Link copied to clipboard!');
-                }
-              }}>
-                Copy image
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
+          <Download className="w-4 h-4" /> Download
+        </Button>
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
