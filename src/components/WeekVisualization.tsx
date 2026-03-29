@@ -228,6 +228,9 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
         {isExporting && (
           <>
             <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+            <p className="text-xs mb-1" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>
+              {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+            </p>
             <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
           </>
         )}
