@@ -100,7 +100,7 @@ export default function WeekVisualization({ schedule, categories }: Props) {
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
         <div className="flex gap-8">
           {/* Left: Day columns */}
-          <div className="flex gap-1 flex-1" style={{ minHeight: 420 }}>
+          <div className="flex flex-1" style={{ minHeight: 420, gap: '1px' }}>
             {DAYS.map((day, i) => {
               const blocks = buildDayBlocks(day);
               return (
@@ -152,6 +152,15 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                   {stat.percentage}%
                 </span>
                 <span
+                  className="opacity-80 leading-tight"
+                  style={{
+                    fontSize: circleSizes[i] * 0.09,
+                    fontFamily: "'Open Sans', sans-serif",
+                  }}
+                >
+                  {formatHours(stat.slots)}
+                </span>
+                <span
                   className="opacity-90"
                   style={{
                     fontSize: circleSizes[i] * 0.11,
@@ -182,6 +191,12 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                       className="text-sm tabular-nums font-bold text-foreground"
                     >
                       {stat.percentage}%
+                    </span>
+                    <span
+                      className="text-xs tabular-nums text-muted-foreground"
+                      style={{ fontFamily: "'Open Sans', sans-serif" }}
+                    >
+                      {formatHours(stat.slots)}
                     </span>
                     <span
                       className="text-sm text-muted-foreground"
