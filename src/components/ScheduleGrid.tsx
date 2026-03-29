@@ -7,9 +7,10 @@ interface Props {
   schedule: ScheduleData;
   categories: Category[];
   onChange: (schedule: ScheduleData) => void;
+  increment?: 30 | 60;
 }
 
-export default function ScheduleGrid({ schedule, categories, onChange }: Props) {
+export default function ScheduleGrid({ schedule, categories, onChange, increment = 30 }: Props) {
   const [copiedCell, setCopiedCell] = useState<string | null>(null);
   const [selecting, setSelecting] = useState(false);
   const [selectionStart, setSelectionStart] = useState<{ day: number; slot: number } | null>(null);
@@ -59,6 +60,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
       const slots = [...newSchedule[day]];
       for (let s = minSlot; s <= maxSlot; s++) {
         slots[s] = value;
+        if (increment === 60 && s + 1 < 48) slots[s + 1] = value;
       }
       newSchedule[day] = slots;
     }
@@ -66,7 +68,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
     setShowAutocomplete(null);
     setSelectionStart(null);
     setSelectionEnd(null);
-  }, [schedule, selectionStart, selectionEnd, onChange]);
+  }, [schedule, selectionStart, selectionEnd, onChange, increment]);
 
   const handleCellClick = (day: string, slotIdx: number) => {
     setShowAutocomplete({ day, slot: slotIdx });
@@ -97,6 +99,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
       const newSchedule = { ...schedule };
       const slots = [...newSchedule[day as keyof ScheduleData]];
       slots[slotIdx] = '';
+      if (increment === 60 && slotIdx + 1 < 48) slots[slotIdx + 1] = '';
       newSchedule[day as keyof ScheduleData] = slots;
       onChange(newSchedule);
     }
@@ -166,7 +169,8 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
   const getTimeRange = (slotIdx: number) => {
     const start = format12h(TIME_SLOTS[slotIdx]);
-    const nextIdx = slotIdx + 1;
+    const step = increment === 60 ? 2 : 1;
+    const nextIdx = slotIdx + step;
     const end = format12h(nextIdx < 48 ? TIME_SLOTS[nextIdx] : '00:00');
     return `${start} – ${end}`;
   };
@@ -174,18 +178,21 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
   const visibleRows = useMemo(() => {
     const rows: RowItem[] = [];
     let skipUntil = -1;
-    for (let i = 0; i < 48; i++) {
+    const step = increment === 60 ? 2 : 1;
+    for (let i = 0; i < 48; i += step) {
       if (i <= skipUntil) continue;
-      const range = sleepRanges.find(r => r.start === i);
+      const range = sleepRanges.find(r => r.start <= i && r.end >= i && r.start === i);
       if (range && effectiveCollapsed.has(range.key)) {
         rows.push({ type: 'collapsed', range });
         skipUntil = range.end;
       } else {
+        // In 1-hour mode, skip odd slots that aren't range starts
+        if (increment === 60 && i % 2 !== 0) continue;
         rows.push({ type: 'slot', time: TIME_SLOTS[i], index: i });
       }
     }
     return rows;
-  }, [sleepRanges, effectiveCollapsed]);
+  }, [sleepRanges, effectiveCollapsed, increment]);
 
   return (
     <div className="relative" onMouseUp={handleMouseUp}>
@@ -310,6 +317,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
                       const newSchedule = { ...schedule };
                       const slots = [...newSchedule[showAutocomplete.day as keyof ScheduleData]];
                       slots[showAutocomplete.slot] = name;
+                      if (increment === 60 && showAutocomplete.slot + 1 < 48) slots[showAutocomplete.slot + 1] = name;
                       newSchedule[showAutocomplete.day as keyof ScheduleData] = slots;
                       onChange(newSchedule);
                       setShowAutocomplete(null);
