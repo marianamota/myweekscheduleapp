@@ -192,46 +192,9 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-2xl font-bold text-foreground">Visualisation of my week</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
-            <Download className="w-4 h-4" /> Save
-          </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="gap-1.5">
-                <Share2 className="w-4 h-4" /> Share
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => handleShare('twitter')}>
-                𝕏 (Twitter)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('facebook')}>
-                Facebook
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('linkedin')}>
-                LinkedIn
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
-                WhatsApp
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={async () => {
-                const dataUrl = await generateImage();
-                if (!dataUrl) return;
-                const blob = await (await fetch(dataUrl)).blob();
-                try {
-                  await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                  toast.success('Image copied to clipboard!');
-                } catch {
-                  navigator.clipboard.writeText(shareText);
-                  toast.success('Link copied to clipboard!');
-                }
-              }}>
-                Copy image
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        </div>
+        <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
+          <Download className="w-4 h-4" /> Download
+        </Button>
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
