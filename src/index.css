@@ -97,3 +97,7 @@
 .cell-filled:hover {
   opacity: 0.85;
 }
+
+.exporting .export-only {
+  display: block !important;
+}
