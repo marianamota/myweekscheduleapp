@@ -67,7 +67,7 @@ export default function Index() {
 
             <div>
               <h3 className="font-display font-semibold text-foreground mb-1">📅 Plan Your Week</h3>
-              <p className="text-sm text-muted-foreground">Click any slot to assign a category · Drag to select multiple · Ctrl+C / Ctrl+V to copy & paste</p>
+              <p className="text-sm text-muted-foreground">Click any slot to assign a category. Drag to select multiple. Ctrl+C / Ctrl+V to copy & paste.</p>
             </div>
 
             {/* Grid */}
