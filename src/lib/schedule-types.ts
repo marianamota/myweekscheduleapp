@@ -15,12 +15,12 @@ export interface Category {
 
 export const DEFAULT_CATEGORIES: Category[] = [
   { id: 1, name: 'Sleeping', colorVar: '--cat-1' },
-  { id: 2, name: 'Family time', colorVar: '--cat-2' },
-  { id: 3, name: 'Work', colorVar: '--cat-3' },
-  { id: 4, name: 'Couple time', colorVar: '--cat-4' },
-  { id: 5, name: 'Exercise & wellbeing', colorVar: '--cat-5' },
-  { id: 6, name: 'Free', colorVar: '--cat-6' },
-  { id: 7, name: 'Routine', colorVar: '--cat-7' },
+  { id: 2, name: 'Work', colorVar: '--cat-2' },
+  { id: 3, name: 'Exercise', colorVar: '--cat-3' },
+  { id: 4, name: 'Commute', colorVar: '--cat-4' },
+  { id: 5, name: 'Meals', colorVar: '--cat-5' },
+  { id: 6, name: 'Leisure', colorVar: '--cat-6' },
+  { id: 7, name: 'Chores', colorVar: '--cat-7' },
 ];
 
 export const MAX_CATEGORIES = 10;

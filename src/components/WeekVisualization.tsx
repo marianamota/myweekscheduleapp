@@ -2,7 +2,7 @@ import { useRef } from 'react';
 import { DAYS, ScheduleData, Category, getCategoryColor, getCategoryStats } from '@/lib/schedule-types';
 import { toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
-import { Download, Share2 } from 'lucide-react';
+import { Download } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -149,14 +149,9 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-2xl font-bold text-foreground">Your Week, Visualised</h2>
-        <div className="flex gap-2">
-          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
-            <Download className="w-4 h-4" /> Save
-          </Button>
-          <Button size="sm" onClick={handleShare} className="gap-1.5">
-            <Share2 className="w-4 h-4" /> Share
-          </Button>
-        </div>
+        <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
+          <Download className="w-4 h-4" /> Save
+        </Button>
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
