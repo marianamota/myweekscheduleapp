@@ -28,10 +28,10 @@ export default function CategoryManager({ categories, onChange }: Props) {
 
   return (
     <div className="bg-card rounded-lg border p-4 space-y-3">
-      <h3 className="font-display font-semibold text-foreground">🏷️ Categories ({categories.length}/{MAX_CATEGORIES})</h3>
+      <h3 className="font-display font-semibold text-foreground">🏷️ Categories</h3>
       <p className="text-xs text-muted-foreground">Add or edit the categories you'd like to track — up to {MAX_CATEGORIES}</p>
       <div className="flex flex-wrap gap-2">
-        {categories.map(cat => (
+        {categories.filter(cat => cat.name !== 'Sleeping').map(cat => (
           <div key={cat.id} className="flex items-center gap-1.5 bg-muted rounded-full pl-1 pr-2 py-1">
             <div className="w-5 h-5 rounded-full flex-shrink-0" style={{ background: `hsl(var(${cat.colorVar}))` }} />
             <Input
