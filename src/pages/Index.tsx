@@ -66,14 +66,22 @@ export default function Index() {
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
-            <div>
-              <h3 className="font-display font-semibold text-foreground mb-1">📅 My typical week schedule</h3>
-              <p className="text-sm text-muted-foreground">Click any slot to assign a category. Drag to select multiple. Ctrl+C / Ctrl+V to copy & paste.</p>
+            <div className="flex items-start justify-between gap-4">
+              <div>
+                <h3 className="font-display font-semibold text-foreground mb-1">📅 My typical week schedule</h3>
+                <p className="text-sm text-muted-foreground">Click any slot to assign a category. Drag to select multiple. Ctrl+C / Ctrl+V to copy & paste.</p>
+              </div>
+              <button
+                onClick={() => setIncrement(prev => prev === 30 ? 60 : 30)}
+                className="text-sm text-muted-foreground hover:text-foreground underline underline-offset-4 transition-colors whitespace-nowrap mt-1"
+              >
+                Switch to {increment === 30 ? '1 hour' : '30 min'} view
+              </button>
             </div>
 
             {/* Grid */}
             <div>
-              <ScheduleGrid schedule={schedule} categories={categories} onChange={setSchedule} />
+              <ScheduleGrid schedule={schedule} categories={categories} onChange={setSchedule} increment={increment} />
             </div>
 
             <div className="flex items-center justify-between">
