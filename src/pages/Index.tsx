@@ -5,6 +5,7 @@ import { DAYS, ScheduleData, Category, DEFAULT_CATEGORIES, createEmptySchedule, 
 import ScheduleGrid from '@/components/ScheduleGrid';
 import SleepSettingsPanel from '@/components/SleepSettings';
 import CategoryManager from '@/components/CategoryManager';
+import ScreenTimePanel from '@/components/ScreenTimePanel';
 import WeekVisualization from '@/components/WeekVisualization';
 import FeedbackWidget from '@/components/FeedbackWidget';
 import { Button } from '@/components/ui/button';
@@ -15,6 +16,8 @@ export default function Index() {
   const [schedule, setSchedule] = useState<ScheduleData>(createEmptySchedule());
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
   const [sleepSettings, setSleepSettings] = useState<SleepSettings>(createDefaultSleepSettings());
+  const [screenTimeHours, setScreenTimeHours] = useState(0);
+  const [screenTimeMinutes, setScreenTimeMinutes] = useState(0);
   const [tab, setTab] = useState('input');
 
   const handleApplySleep = useCallback(() => {
@@ -52,7 +55,10 @@ export default function Index() {
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
             {/* Setup panels */}
             <div className="grid md:grid-cols-2 gap-4">
-              <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} onApply={handleApplySleep} />
+              <div className="space-y-4">
+                <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} onApply={handleApplySleep} />
+                <ScreenTimePanel hours={screenTimeHours} minutes={screenTimeMinutes} onChange={(h, m) => { setScreenTimeHours(h); setScreenTimeMinutes(m); }} />
+              </div>
               <CategoryManager categories={categories} onChange={setCategories} />
             </div>
 
