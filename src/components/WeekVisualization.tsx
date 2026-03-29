@@ -98,10 +98,15 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     }
   }
 
-  // Top 3 items get big circles, rest go to legend
-  const topItems = allItems.slice(0, 3);
-  const restItems = allItems.slice(3);
-  const circleSizes = [160, 130, 100];
+  // Items ≥10% get circles, <10% go to legend lines
+  const circleItems = allItems.filter(item =>
+    item.type === 'screen' ? screenPct >= 10 : item.stat.percentage >= 10
+  );
+  const legendItems = allItems.filter(item =>
+    item.type === 'screen' ? screenPct < 10 : item.stat.percentage < 10
+  );
+  // Size circles based on count (max 5 circle sizes)
+  const circleSizeMap = [160, 130, 100, 85, 75];
 
   const renderScreenTimeLegend = (delay: number) => (
     <motion.div
@@ -188,9 +193,10 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
           {/* Right: Category circles + legend */}
           <div className="flex flex-col items-center justify-center gap-4" style={{ minWidth: 200 }}>
             {/* Big circles for top items */}
-            {topItems.map((item, i) => {
+            {circleItems.map((item, i) => {
+              const size = circleSizeMap[Math.min(i, circleSizeMap.length - 1)];
               if (item.type === 'screen') {
-                return renderScreenTimeCircle(circleSizes[i], 0.3 + i * 0.12);
+                return renderScreenTimeCircle(size, 0.3 + i * 0.12);
               }
               const stat = item.stat;
               return (
@@ -201,23 +207,23 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
                   transition={{ delay: 0.3 + i * 0.12, type: 'spring', stiffness: 200 }}
                   className="rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg"
                   style={{
-                    width: circleSizes[i],
-                    height: circleSizes[i],
+                    width: size,
+                    height: size,
                     backgroundColor: stat.color,
                     border: 'none',
                   }}
                 >
-                  <span className="leading-none" style={{ fontSize: circleSizes[i] * 0.28 }}>{stat.percentage}%</span>
-                  <span className="opacity-80 leading-tight" style={{ fontSize: circleSizes[i] * 0.09, fontFamily: "'Open Sans', sans-serif" }}>{formatHours(stat.slots)}</span>
-                  <span className="opacity-90" style={{ fontSize: circleSizes[i] * 0.11, fontFamily: "'Open Sans', sans-serif" }}>{stat.name}</span>
+                  <span className="leading-none" style={{ fontSize: size * 0.28 }}>{stat.percentage}%</span>
+                  <span className="opacity-80 leading-tight" style={{ fontSize: size * 0.09, fontFamily: "'Open Sans', sans-serif" }}>{formatHours(stat.slots)}</span>
+                  <span className="opacity-90" style={{ fontSize: size * 0.11, fontFamily: "'Open Sans', sans-serif" }}>{stat.name}</span>
                 </motion.div>
               );
             })}
 
-            {/* Legend for remaining items */}
-            {restItems.length > 0 && (
+            {/* Legend for items <10% */}
+            {legendItems.length > 0 && (
               <div className="mt-2 space-y-2">
-                {restItems.map((item, i) => {
+                {legendItems.map((item, i) => {
                   if (item.type === 'screen') {
                     return renderScreenTimeLegend(0.6 + i * 0.06);
                   }
