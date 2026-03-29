@@ -193,38 +193,31 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week!';
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('twitter')}>
                 𝕏 (Twitter)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('facebook')}>
                 Facebook
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week!';
-                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('linkedin')}>
                 LinkedIn
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week! ' + url;
-                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
                 WhatsApp
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                navigator.clipboard.writeText('https://marianamota.github.io/myweekscheduleapp/');
-                alert('Link copied to clipboard!');
+              <DropdownMenuItem onClick={async () => {
+                const dataUrl = await generateImage();
+                if (!dataUrl) return;
+                const blob = await (await fetch(dataUrl)).blob();
+                try {
+                  await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                  alert('Image copied to clipboard!');
+                } catch {
+                  navigator.clipboard.writeText(shareText);
+                  alert('Link copied to clipboard!');
+                }
               }}>
-                Copy link
+                Copy image
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
