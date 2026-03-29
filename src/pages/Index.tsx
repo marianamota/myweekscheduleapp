@@ -7,7 +7,7 @@ import SleepSettingsPanel from '@/components/SleepSettings';
 import CategoryManager from '@/components/CategoryManager';
 import ScreenTimePanel from '@/components/ScreenTimePanel';
 import WeekVisualization from '@/components/WeekVisualization';
-import FeedbackWidget from '@/components/FeedbackWidget';
+
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarDays, BarChart3 } from 'lucide-react';
@@ -93,13 +93,14 @@ export default function Index() {
         )}
       </main>
 
-      <footer className="border-t bg-card mt-12 py-4 text-center">
-        <Link to="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors underline underline-offset-4">
-          Privacy Policy
-        </Link>
+      <footer className="border-t bg-card mt-12 py-6">
+        <div className="container max-w-6xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-sm text-muted-foreground">
+          <p>© 2026 Time Well Spent. To provide feedback about the app or if you have any questions, email <a href="mailto:myweekscheduleapp@gmail.com" className="underline underline-offset-4 hover:text-foreground transition-colors">myweekscheduleapp@gmail.com</a></p>
+          <Link to="/privacy" className="hover:text-foreground transition-colors underline underline-offset-4">
+            Privacy Policy
+          </Link>
+        </div>
       </footer>
-
-      <FeedbackWidget />
     </div>
   );
 }
