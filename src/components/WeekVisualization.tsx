@@ -16,7 +16,7 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
   const vizRef = useRef<HTMLDivElement>(null);
   const stats = getCategoryStats(schedule, categories);
 
-  const shareText = 'This is how I spend my time. Check how you spend your time on https://bit.ly/how-I-spend-my-time';
+
 
   const generateImage = async (): Promise<string> => {
     if (!vizRef.current) return '';
