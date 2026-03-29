@@ -8,9 +8,11 @@ import { motion } from 'framer-motion';
 interface Props {
   schedule: ScheduleData;
   categories: Category[];
+  screenTimeHours?: number;
+  screenTimeMinutes?: number;
 }
 
-export default function WeekVisualization({ schedule, categories }: Props) {
+export default function WeekVisualization({ schedule, categories, screenTimeHours = 0, screenTimeMinutes = 0 }: Props) {
   const vizRef = useRef<HTMLDivElement>(null);
   const stats = getCategoryStats(schedule, categories);
 
@@ -208,6 +210,34 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                 ))}
               </div>
             )}
+
+            {/* Screen time (separate from 100% breakdown) */}
+            {(screenTimeHours > 0 || screenTimeMinutes > 0) && (() => {
+              const totalScreenMins = screenTimeHours * 60 + screenTimeMinutes;
+              const totalWeekMins = 168 * 60;
+              const screenPct = Math.round((totalScreenMins / totalWeekMins) * 100);
+              const screenHrs = totalScreenMins / 60;
+              const screenLabel = screenHrs % 1 === 0 ? `${screenHrs}h` : `${screenHrs.toFixed(1)}h`;
+              return (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.8 }}
+                  className="mt-4 pt-4 border-t border-dashed"
+                  style={{ borderColor: 'hsl(var(--border))' }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span style={{ fontSize: 18 }}>📱</span>
+                    <span className="text-sm font-bold text-foreground">{screenPct}%</span>
+                    <span className="text-xs tabular-nums text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{screenLabel}</span>
+                    <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Screen time</span>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground mt-0.5 ml-7" style={{ fontFamily: "'Open Sans', sans-serif" }}>
+                    of your week on your phone
+                  </p>
+                </motion.div>
+              );
+            })()}
           </div>
         </div>
       </div>
