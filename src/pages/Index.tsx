@@ -21,6 +21,7 @@ export default function Index() {
   const [screenTimeHours, setScreenTimeHours] = useState(0);
   const [screenTimeMinutes, setScreenTimeMinutes] = useState(0);
   const [tab, setTab] = useState('input');
+  const [increment, setIncrement] = useState<30 | 60>(30);
 
   // Auto-apply sleep whenever settings change
   useEffect(() => {
