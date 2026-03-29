@@ -60,6 +60,7 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
       const slots = [...newSchedule[day]];
       for (let s = minSlot; s <= maxSlot; s++) {
         slots[s] = value;
+        if (increment === 60 && s + 1 < 48) slots[s + 1] = value;
       }
       newSchedule[day] = slots;
     }
@@ -67,7 +68,7 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
     setShowAutocomplete(null);
     setSelectionStart(null);
     setSelectionEnd(null);
-  }, [schedule, selectionStart, selectionEnd, onChange]);
+  }, [schedule, selectionStart, selectionEnd, onChange, increment]);
 
   const handleCellClick = (day: string, slotIdx: number) => {
     setShowAutocomplete({ day, slot: slotIdx });
