@@ -2,7 +2,13 @@ import { useRef, useState } from 'react';
 import { DAYS, ScheduleData, Category, getCategoryColor, getCategoryStats } from '@/lib/schedule-types';
 import { toPng } from 'html-to-image';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Share2 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { motion } from 'framer-motion';
 
 interface Props {
