@@ -59,7 +59,7 @@ export default function Index() {
             {/* Setup panels */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-4">
-                <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} onApply={handleApplySleep} />
+                <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} />
                 <ScreenTimePanel hours={screenTimeHours} minutes={screenTimeMinutes} onChange={(h, m) => { setScreenTimeHours(h); setScreenTimeMinutes(m); }} />
               </div>
               <CategoryManager categories={categories} onChange={setCategories} />
