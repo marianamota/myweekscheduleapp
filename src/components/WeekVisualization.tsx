@@ -142,7 +142,7 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                   width: circleSizes[i],
                   height: circleSizes[i],
                   backgroundColor: stat.color,
-                  border: i === 1 ? `3px solid ${topStats[0]?.color || stat.color}` : 'none',
+                  border: 'none',
                 }}
               >
                 <span
