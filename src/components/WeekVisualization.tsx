@@ -23,17 +23,54 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
   const [isExporting, setIsExporting] = useState(false);
   const stats = getCategoryStats(schedule, categories);
 
-  const handleDownload = async () => {
-    if (!vizRef.current) return;
+  const shareText = 'This is how I spend my time. Check how you spend your time on https://bit.ly/how-I-spend-my-time';
+
+  const generateImage = async (): Promise<string> => {
+    if (!vizRef.current) return '';
     setIsExporting(true);
-    // Wait for React to render the title/URL
     await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
     setIsExporting(false);
+    return dataUrl;
+  };
+
+  const handleDownload = async () => {
+    const dataUrl = await generateImage();
+    if (!dataUrl) return;
     const link = document.createElement('a');
     link.download = 'my-week-visualised.png';
     link.href = dataUrl;
     link.click();
+  };
+
+  const handleShare = async (platform: string) => {
+    const dataUrl = await generateImage();
+    if (!dataUrl) return;
+
+    // Try native share with image file if available
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], 'my-week-visualised.png', { type: 'image/png' });
+
+    if (navigator.share && navigator.canShare?.({ files: [file] })) {
+      try {
+        await navigator.share({ text: shareText, files: [file] });
+        return;
+      } catch { /* user cancelled or error, fall through */ }
+    }
+
+    // Fallback: copy image to clipboard and open platform with text
+    try {
+      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+    } catch { /* clipboard not supported */ }
+
+    const encoded = encodeURIComponent(shareText);
+    const urls: Record<string, string> = {
+      twitter: `https://twitter.com/intent/tweet?text=${encoded}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encoded}&u=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
+      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
+      whatsapp: `https://wa.me/?text=${encoded}`,
+    };
+    if (urls[platform]) window.open(urls[platform], '_blank');
   };
 
 
@@ -156,38 +193,31 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week!';
-                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('twitter')}>
                 𝕏 (Twitter)
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('facebook')}>
                 Facebook
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week!';
-                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('linkedin')}>
                 LinkedIn
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                const url = 'https://marianamota.github.io/myweekscheduleapp/';
-                const text = 'Check out how I spend my week! ' + url;
-                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
-              }}>
+              <DropdownMenuItem onClick={() => handleShare('whatsapp')}>
                 WhatsApp
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => {
-                navigator.clipboard.writeText('https://marianamota.github.io/myweekscheduleapp/');
-                alert('Link copied to clipboard!');
+              <DropdownMenuItem onClick={async () => {
+                const dataUrl = await generateImage();
+                if (!dataUrl) return;
+                const blob = await (await fetch(dataUrl)).blob();
+                try {
+                  await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
+                  alert('Image copied to clipboard!');
+                } catch {
+                  navigator.clipboard.writeText(shareText);
+                  alert('Link copied to clipboard!');
+                }
               }}>
-                Copy link
+                Copy image
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -198,6 +228,9 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
         {isExporting && (
           <>
             <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+            <p className="text-xs mb-1" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>
+              {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+            </p>
             <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
           </>
         )}
