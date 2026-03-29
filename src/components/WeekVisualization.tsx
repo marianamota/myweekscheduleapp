@@ -25,21 +25,6 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     link.click();
   };
 
-  const handleShare = async () => {
-    if (!vizRef.current) return;
-    try {
-      const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
-      const blob = await (await fetch(dataUrl)).blob();
-      const file = new File([blob], 'my-week.png', { type: 'image/png' });
-      if (navigator.share) {
-        await navigator.share({ files: [file], title: 'My Week Visualised' });
-      } else {
-        handleDownload();
-      }
-    } catch {
-      handleDownload();
-    }
-  };
 
   const buildDayBlocks = (day: typeof DAYS[number]) => {
     const slots = schedule[day];
