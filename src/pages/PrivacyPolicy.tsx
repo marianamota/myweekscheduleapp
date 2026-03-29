@@ -31,7 +31,7 @@ export default function PrivacyPolicy() {
 
         <h2>Cookies and local storage</h2>
         <p>
-          This app may use your browser's local storage to preserve your schedule between visits for your convenience. This data is stored only on your device and is never transmitted externally. You can clear it at any time through your browser settings.
+          This app does not use cookies or local storage. All data exists only in your browser's memory during your session and is discarded when you close or refresh the page.
         </p>
 
         <h2>Analytics and tracking</h2>
@@ -61,7 +61,8 @@ export default function PrivacyPolicy() {
 
         <h2>Contact</h2>
         <p>
-          If you have any questions about this privacy policy, please reach out via the feedback widget within the app.
+          If you have any questions about this privacy policy, please email us at{' '}
+          <a href="mailto:myweekscheduleapp@gmail.com" className="text-primary underline">myweekscheduleapp@gmail.com</a>.
         </p>
       </main>
     </div>
