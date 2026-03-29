@@ -129,7 +129,7 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
       initial={{ scale: 0 }}
       animate={{ scale: 1 }}
       transition={{ delay, type: 'spring', stiffness: 200 }}
-      className="rounded-full flex flex-col items-center justify-center font-bold shadow-lg"
+      className="rounded-full flex flex-col items-center justify-center font-bold"
       style={{
         width: size,
         height: size,
@@ -155,6 +155,8 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
+        <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+        <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
         <div className="flex gap-8">
           {/* Left: Day columns */}
           <div className="flex flex-1" style={{ minHeight: 420, gap: '1px' }}>
@@ -200,7 +202,7 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
                   transition={{ delay: 0.3 + i * 0.12, type: 'spring', stiffness: 200 }}
-                  className="rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg"
+                  className="rounded-full flex flex-col items-center justify-center text-white font-bold"
                   style={{
                     width: size,
                     height: size,
