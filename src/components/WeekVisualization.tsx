@@ -9,6 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
 interface Props {
@@ -47,21 +48,29 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     const dataUrl = await generateImage();
     if (!dataUrl) return;
 
-    // Try native share with image file if available
     const blob = await (await fetch(dataUrl)).blob();
     const file = new File([blob], 'my-week-visualised.png', { type: 'image/png' });
 
+    // Native Web Share API — shares the actual image file
     if (navigator.share && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ text: shareText, files: [file] });
         return;
-      } catch { /* user cancelled or error, fall through */ }
+      } catch { /* user cancelled */ return; }
     }
 
-    // Fallback: copy image to clipboard and open platform with text
+    // Fallback for desktop: copy image to clipboard, then open platform
     try {
       await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-    } catch { /* clipboard not supported */ }
+      toast.success('Image copied to clipboard — paste it into your post!');
+    } catch {
+      // If clipboard fails, trigger download so user has the file
+      const link = document.createElement('a');
+      link.download = 'my-week-visualised.png';
+      link.href = dataUrl;
+      link.click();
+      toast.info('Image downloaded — attach it to your post!');
+    }
 
     const encoded = encodeURIComponent(shareText);
     const urls: Record<string, string> = {
@@ -211,10 +220,10 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
                 const blob = await (await fetch(dataUrl)).blob();
                 try {
                   await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                  alert('Image copied to clipboard!');
+                  toast.success('Image copied to clipboard!');
                 } catch {
                   navigator.clipboard.writeText(shareText);
-                  alert('Link copied to clipboard!');
+                  toast.success('Link copied to clipboard!');
                 }
               }}>
                 Copy image
