@@ -220,10 +220,10 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
                 const blob = await (await fetch(dataUrl)).blob();
                 try {
                   await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-                  alert('Image copied to clipboard!');
+                  toast.success('Image copied to clipboard!');
                 } catch {
                   navigator.clipboard.writeText(shareText);
-                  alert('Link copied to clipboard!');
+                  toast.success('Link copied to clipboard!');
                 }
               }}>
                 Copy image
