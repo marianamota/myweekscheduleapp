@@ -21,17 +21,18 @@ interface Props {
 
 export default function WeekVisualization({ schedule, categories, screenTimeHours = 0, screenTimeMinutes = 0 }: Props) {
   const vizRef = useRef<HTMLDivElement>(null);
-  const [isExporting, setIsExporting] = useState(false);
   const stats = getCategoryStats(schedule, categories);
 
   const shareText = 'This is how I spend my time. Check how you spend your time on https://bit.ly/how-I-spend-my-time';
 
   const generateImage = async (): Promise<string> => {
     if (!vizRef.current) return '';
-    setIsExporting(true);
+    // Show export-only elements via CSS class, no React re-render needed
+    vizRef.current.classList.add('exporting');
+    // Small delay for paint
     await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
-    setIsExporting(false);
+    vizRef.current.classList.remove('exporting');
     return dataUrl;
   };
 
@@ -234,15 +235,13 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
-        {isExporting && (
-          <>
-            <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
-            <p className="text-xs mb-1" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>
-              {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
-            </p>
-            <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
-          </>
-        )}
+        <div className="export-only" style={{ display: 'none' }}>
+          <h3 className="font-bold text-lg mb-1" style={{ color: '#1a1a2e' }}>How I spend my time</h3>
+          <p className="text-xs mb-1" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>
+            {new Date().toLocaleDateString('en-GB', { month: 'long', year: 'numeric' })}
+          </p>
+          <p className="text-xs mb-6" style={{ color: '#94a3b8', fontFamily: "'Open Sans', sans-serif" }}>https://marianamota.github.io/myweekscheduleapp/</p>
+        </div>
         <div className="flex gap-8">
           {/* Left: Day columns */}
           <div className="flex flex-1" style={{ minHeight: 420, gap: '1px' }}>
