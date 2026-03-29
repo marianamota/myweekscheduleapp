@@ -14,11 +14,16 @@ interface Props {
 
 export default function WeekVisualization({ schedule, categories, screenTimeHours = 0, screenTimeMinutes = 0 }: Props) {
   const vizRef = useRef<HTMLDivElement>(null);
+  const [isExporting, setIsExporting] = useState(false);
   const stats = getCategoryStats(schedule, categories);
 
   const handleDownload = async () => {
     if (!vizRef.current) return;
+    setIsExporting(true);
+    // Wait for React to render the title/URL
+    await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
+    setIsExporting(false);
     const link = document.createElement('a');
     link.download = 'my-week-visualised.png';
     link.href = dataUrl;
