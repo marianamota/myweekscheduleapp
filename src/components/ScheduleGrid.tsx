@@ -99,6 +99,7 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
       const newSchedule = { ...schedule };
       const slots = [...newSchedule[day as keyof ScheduleData]];
       slots[slotIdx] = '';
+      if (increment === 60 && slotIdx + 1 < 48) slots[slotIdx + 1] = '';
       newSchedule[day as keyof ScheduleData] = slots;
       onChange(newSchedule);
     }
