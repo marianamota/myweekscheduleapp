@@ -1,6 +1,7 @@
 import { useState, useCallback, useRef, useMemo } from 'react';
 import { DAYS, TIME_SLOTS, ScheduleData, Category, getCategoryColor } from '@/lib/schedule-types';
 import { ChevronDown, ChevronRight } from 'lucide-react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 interface Props {
   schedule: ScheduleData;
@@ -342,15 +343,20 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
       {selectionStart && selectionEnd && !showAutocomplete && (
         <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-40 bg-card border shadow-xl rounded-full px-4 py-2 flex items-center gap-2">
           <span className="text-xs text-muted-foreground">Fill selection:</span>
-          {catNames.map(name => (
-            <button
-              key={name}
-              className="w-6 h-6 rounded-full border-2 border-transparent hover:border-foreground transition-all"
-              title={name}
-              style={{ background: getCategoryColor(name, categories) }}
-              onClick={() => applyToSelection(name)}
-            />
-          ))}
+          <TooltipProvider delayDuration={0}>
+            {catNames.map(name => (
+              <Tooltip key={name}>
+                <TooltipTrigger asChild>
+                  <button
+                    className="w-6 h-6 rounded-full border-2 border-transparent hover:border-foreground transition-all"
+                    style={{ background: getCategoryColor(name, categories) }}
+                    onClick={() => applyToSelection(name)}
+                  />
+                </TooltipTrigger>
+                <TooltipContent side="top" className="text-xs">{name}</TooltipContent>
+              </Tooltip>
+            ))}
+          </TooltipProvider>
           <button
             className="text-xs text-muted-foreground hover:text-foreground ml-2"
             onClick={() => applyToSelection('')}
