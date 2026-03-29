@@ -36,8 +36,8 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
   };
 
   const handleMouseEnter = (dayIdx: number, slotIdx: number) => {
-    if (selecting) {
-      setSelectionEnd({ day: dayIdx, slot: slotIdx });
+    if (selecting && selectionStart) {
+      setSelectionEnd({ day: selectionStart.day, slot: slotIdx });
     }
   };
 
@@ -192,7 +192,12 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
         <table className="w-full border-collapse text-xs" style={{ minWidth: 800 }}>
           <thead>
             <tr>
-              <th className="sticky left-0 z-10 bg-card p-2 text-left text-muted-foreground font-medium border-b w-16">Time</th>
+              <th className="sticky left-0 z-10 bg-card p-0 text-left text-muted-foreground font-medium border-b w-20">
+                <div className="flex items-center">
+                  <div className="w-1.5 shrink-0" />
+                  <span className="p-2">Time</span>
+                </div>
+              </th>
               {DAYS.map(day => (
                 <th key={day} className="p-2 text-center font-display font-semibold text-foreground border-b min-w-[100px]">
                   {day.slice(0, 3)}
@@ -235,14 +240,20 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
               return (
                 <tr key={time} className={slotIdx % 2 === 0 ? 'bg-card' : 'bg-muted/30'}>
-                  <td className="sticky left-0 z-10 bg-inherit p-1 text-muted-foreground font-mono text-[10px] border-r whitespace-nowrap">
-                    <div className="flex items-center gap-1">
-                      {expandedRange && (
-                        <button onClick={() => toggleSleepRange(expandedRange.key)} className="text-muted-foreground hover:text-foreground">
-                          <ChevronDown className="w-3 h-3" />
-                        </button>
-                      )}
-                       {getTimeRange(slotIdx)}
+                  <td className="sticky left-0 z-10 bg-inherit p-0 text-muted-foreground font-mono text-[10px] border-r whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div
+                        className="w-1.5 shrink-0 self-stretch"
+                        style={{ backgroundColor: slotIdx < 14 || slotIdx >= 42 ? '#1e293b' : '#fbbf24' }}
+                      />
+                      <div className="flex items-center gap-1 p-1">
+                        {expandedRange && (
+                          <button onClick={() => toggleSleepRange(expandedRange.key)} className="text-muted-foreground hover:text-foreground">
+                            <ChevronDown className="w-3 h-3" />
+                          </button>
+                        )}
+                        {getTimeRange(slotIdx)}
+                      </div>
                     </div>
                   </td>
                   {DAYS.map((day, dayIdx) => {
