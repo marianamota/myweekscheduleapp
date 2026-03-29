@@ -37,7 +37,7 @@ export default function Index() {
       >
         <div className="container max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
           <div>
-            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">My week visualisation</h1>
+            <h1 className="font-display text-2xl font-bold text-foreground tracking-tight">Time Well Spent</h1>
             <p className="text-sm text-muted-foreground">See where your time really goes — and take control of it.</p>
           </div>
           <Tabs value={tab} onValueChange={setTab}>
