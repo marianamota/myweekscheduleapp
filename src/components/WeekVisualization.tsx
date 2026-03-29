@@ -98,10 +98,15 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     }
   }
 
-  // Top 3 items get big circles, rest go to legend
-  const topItems = allItems.slice(0, 3);
-  const restItems = allItems.slice(3);
-  const circleSizes = [160, 130, 100];
+  // Items ≥10% get circles, <10% go to legend lines
+  const circleItems = allItems.filter(item =>
+    item.type === 'screen' ? screenPct >= 10 : item.stat.percentage >= 10
+  );
+  const legendItems = allItems.filter(item =>
+    item.type === 'screen' ? screenPct < 10 : item.stat.percentage < 10
+  );
+  // Size circles based on count (max 5 circle sizes)
+  const circleSizeMap = [160, 130, 100, 85, 75];
 
   const renderScreenTimeLegend = (delay: number) => (
     <motion.div
