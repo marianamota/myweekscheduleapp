@@ -37,7 +37,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
 
   const handleMouseEnter = (dayIdx: number, slotIdx: number) => {
     if (selecting && selectionStart) {
-      setSelectionEnd({ day: selectionStart.day, slot: slotIdx });
+      setSelectionEnd({ day: dayIdx, slot: slotIdx });
     }
   };
 
