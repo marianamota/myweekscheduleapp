@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { DAYS, ScheduleData, Category, DEFAULT_CATEGORIES, createEmptySchedule, createDefaultSleepSettings, applySleepToSchedule, SleepSettings } from '@/lib/schedule-types';
@@ -12,15 +12,18 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { CalendarDays, BarChart3 } from 'lucide-react';
 
+const defaultSleep = createDefaultSleepSettings();
+
 export default function Index() {
-  const [schedule, setSchedule] = useState<ScheduleData>(createEmptySchedule());
+  const [schedule, setSchedule] = useState<ScheduleData>(() => applySleepToSchedule(createEmptySchedule(), defaultSleep));
   const [categories, setCategories] = useState<Category[]>(DEFAULT_CATEGORIES);
-  const [sleepSettings, setSleepSettings] = useState<SleepSettings>(createDefaultSleepSettings());
+  const [sleepSettings, setSleepSettings] = useState<SleepSettings>(defaultSleep);
   const [screenTimeHours, setScreenTimeHours] = useState(0);
   const [screenTimeMinutes, setScreenTimeMinutes] = useState(0);
   const [tab, setTab] = useState('input');
 
-  const handleApplySleep = useCallback(() => {
+  // Auto-apply sleep whenever settings change
+  useEffect(() => {
     setSchedule(prev => applySleepToSchedule(prev, sleepSettings));
   }, [sleepSettings]);
 
@@ -56,7 +59,7 @@ export default function Index() {
             {/* Setup panels */}
             <div className="grid md:grid-cols-2 gap-4">
               <div className="space-y-4">
-                <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} onApply={handleApplySleep} />
+                <SleepSettingsPanel settings={sleepSettings} onChange={setSleepSettings} />
                 <ScreenTimePanel hours={screenTimeHours} minutes={screenTimeMinutes} onChange={(h, m) => { setScreenTimeHours(h); setScreenTimeMinutes(m); }} />
               </div>
               <CategoryManager categories={categories} onChange={setCategories} />
