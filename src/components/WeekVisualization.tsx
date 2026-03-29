@@ -42,18 +42,19 @@ export default function WeekVisualization({ schedule, categories }: Props) {
   const buildDayBlocks = (day: typeof DAYS[number]) => {
     const slots = schedule[day];
     const blocks: { category: string; count: number }[] = [];
-    let current = '';
+    let current: string | null = null;
     let count = 0;
     for (const slot of slots) {
-      if (slot === current) {
+      const key = slot || '__empty__';
+      if (key === current) {
         count++;
       } else {
-        if (current) blocks.push({ category: current, count });
-        current = slot;
+        if (current !== null) blocks.push({ category: current, count });
+        current = key;
         count = 1;
       }
     }
-    if (current) blocks.push({ category: current, count });
+    if (current !== null) blocks.push({ category: current, count });
     return blocks;
   };
 
@@ -116,7 +117,9 @@ export default function WeekVisualization({ schedule, categories }: Props) {
                       key={j}
                       style={{
                         height: `${(block.count / 48) * 100}%`,
-                        backgroundColor: getCategoryColor(block.category, categories),
+                        backgroundColor: block.category === '__empty__'
+                          ? 'hsl(var(--muted) / 0.3)'
+                          : getCategoryColor(block.category, categories),
                       }}
                     />
                   ))}
