@@ -145,9 +145,53 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h2 className="font-display text-2xl font-bold text-foreground">Visualisation of my week</h2>
-        <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
-          <Download className="w-4 h-4" /> Save
-        </Button>
+        <div className="flex gap-2">
+          <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
+            <Download className="w-4 h-4" /> Save
+          </Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm" className="gap-1.5">
+                <Share2 className="w-4 h-4" /> Share
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => {
+                const url = 'https://marianamota.github.io/myweekscheduleapp/';
+                const text = 'Check out how I spend my week!';
+                window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+              }}>
+                𝕏 (Twitter)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = 'https://marianamota.github.io/myweekscheduleapp/';
+                window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+              }}>
+                Facebook
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = 'https://marianamota.github.io/myweekscheduleapp/';
+                const text = 'Check out how I spend my week!';
+                window.open(`https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent(url)}`, '_blank');
+              }}>
+                LinkedIn
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                const url = 'https://marianamota.github.io/myweekscheduleapp/';
+                const text = 'Check out how I spend my week! ' + url;
+                window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
+              }}>
+                WhatsApp
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => {
+                navigator.clipboard.writeText('https://marianamota.github.io/myweekscheduleapp/');
+                alert('Link copied to clipboard!');
+              }}>
+                Copy link
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
 
       <div ref={vizRef} className="bg-white rounded-2xl p-8" style={{ fontFamily: "'Parkinsans', sans-serif" }}>
