@@ -168,7 +168,8 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
 
   const getTimeRange = (slotIdx: number) => {
     const start = format12h(TIME_SLOTS[slotIdx]);
-    const nextIdx = slotIdx + 1;
+    const step = increment === 60 ? 2 : 1;
+    const nextIdx = slotIdx + step;
     const end = format12h(nextIdx < 48 ? TIME_SLOTS[nextIdx] : '00:00');
     return `${start} – ${end}`;
   };
