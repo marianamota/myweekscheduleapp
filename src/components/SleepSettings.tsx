@@ -17,20 +17,21 @@ export default function SleepSettingsPanel({ settings, onChange, onApply }: Prop
     <div className="bg-card rounded-lg border p-4 space-y-4">
       <h3 className="font-display font-semibold text-foreground">🌙 Sleep Schedule</h3>
       <p className="text-sm text-muted-foreground -mt-2">Set your usual sleep and wake times to get started.</p>
-      <div className="flex items-center gap-3">
+      <div className="flex items-center gap-3 flex-wrap">
         <Switch
           checked={settings.sameEveryDay}
           onCheckedChange={(v) => onChange({ ...settings, sameEveryDay: v })}
         />
         <Label className="text-sm text-muted-foreground">Same every day</Label>
+        {settings.sameEveryDay && (
+          <>
+            <TimeSelect label="Sleep at" value={settings.default.sleep} onChange={(v) => onChange({ ...settings, default: { ...settings.default, sleep: v } })} />
+            <TimeSelect label="Wake at" value={settings.default.wake} onChange={(v) => onChange({ ...settings, default: { ...settings.default, wake: v } })} />
+          </>
+        )}
       </div>
 
-      {settings.sameEveryDay ? (
-        <div className="flex gap-4 items-center flex-wrap">
-          <TimeSelect label="Sleep at" value={settings.default.sleep} onChange={(v) => onChange({ ...settings, default: { ...settings.default, sleep: v } })} />
-          <TimeSelect label="Wake at" value={settings.default.wake} onChange={(v) => onChange({ ...settings, default: { ...settings.default, wake: v } })} />
-        </div>
-      ) : (
+      {!settings.sameEveryDay && (
         <div className="space-y-2">
           {DAYS.map(day => (
             <div key={day} className="flex items-center gap-3 flex-wrap">
