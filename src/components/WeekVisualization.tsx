@@ -38,43 +38,6 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     link.click();
   };
 
-  const handleShare = async (platform: string) => {
-    const dataUrl = await generateImage();
-    if (!dataUrl) return;
-
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], 'my-week-visualised.png', { type: 'image/png' });
-
-    // Native Web Share API — shares the actual image file
-    if (navigator.share && navigator.canShare?.({ files: [file] })) {
-      try {
-        await navigator.share({ text: shareText, files: [file] });
-        return;
-      } catch { /* user cancelled */ return; }
-    }
-
-    // Fallback for desktop: copy image to clipboard, then open platform
-    try {
-      await navigator.clipboard.write([new ClipboardItem({ 'image/png': blob })]);
-      toast.success('Image copied to clipboard — paste it into your post!');
-    } catch {
-      // If clipboard fails, trigger download so user has the file
-      const link = document.createElement('a');
-      link.download = 'my-week-visualised.png';
-      link.href = dataUrl;
-      link.click();
-      toast.info('Image downloaded — attach it to your post!');
-    }
-
-    const encoded = encodeURIComponent(shareText);
-    const urls: Record<string, string> = {
-      twitter: `https://twitter.com/intent/tweet?text=${encoded}`,
-      facebook: `https://www.facebook.com/sharer/sharer.php?quote=${encoded}&u=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
-      linkedin: `https://www.linkedin.com/sharing/share-offsite/?url=${encodeURIComponent('https://bit.ly/how-I-spend-my-time')}`,
-      whatsapp: `https://wa.me/?text=${encoded}`,
-    };
-    if (urls[platform]) window.open(urls[platform], '_blank');
-  };
 
 
   const buildDayBlocks = (day: typeof DAYS[number]) => {
