@@ -244,7 +244,7 @@ export default function ScheduleGrid({ schedule, categories, onChange }: Props) 
                     <div className="flex items-center">
                       <div
                         className="w-1.5 shrink-0 self-stretch"
-                        style={{ backgroundColor: slotIdx < 14 || slotIdx >= 42 ? '#1e293b' : '#fbbf24' }}
+                        style={{ backgroundColor: slotIdx < 12 || slotIdx >= 36 ? '#64748b' : '#d1d5db' }}
                       />
                       <div className="flex items-center gap-1 p-1">
                         {expandedRange && (
