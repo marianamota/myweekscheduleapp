@@ -177,18 +177,21 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
   const visibleRows = useMemo(() => {
     const rows: RowItem[] = [];
     let skipUntil = -1;
-    for (let i = 0; i < 48; i++) {
+    const step = increment === 60 ? 2 : 1;
+    for (let i = 0; i < 48; i += step) {
       if (i <= skipUntil) continue;
-      const range = sleepRanges.find(r => r.start === i);
+      const range = sleepRanges.find(r => r.start <= i && r.end >= i && r.start === i);
       if (range && effectiveCollapsed.has(range.key)) {
         rows.push({ type: 'collapsed', range });
         skipUntil = range.end;
       } else {
+        // In 1-hour mode, skip odd slots that aren't range starts
+        if (increment === 60 && i % 2 !== 0) continue;
         rows.push({ type: 'slot', time: TIME_SLOTS[i], index: i });
       }
     }
     return rows;
-  }, [sleepRanges, effectiveCollapsed]);
+  }, [sleepRanges, effectiveCollapsed, increment]);
 
   return (
     <div className="relative" onMouseUp={handleMouseUp}>
