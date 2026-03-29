@@ -229,6 +229,22 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
             )}
           </div>
         </div>
+
+        {/* Category legends */}
+        <div className="flex flex-wrap gap-x-4 gap-y-1.5 mt-6 pt-4" style={{ borderTop: '1px solid #e5e7eb' }}>
+          {categories.filter(c => stats.some(s => s.name === c.name)).map(cat => (
+            <div key={cat.id} className="flex items-center gap-1.5">
+              <div className="w-3 h-3 rounded-full shrink-0" style={{ backgroundColor: `hsl(var(${cat.colorVar}))` }} />
+              <span className="text-xs" style={{ color: '#64748b', fontFamily: "'Open Sans', sans-serif" }}>{cat.name}</span>
+            </div>
+          ))}
+          {hasScreenTime && (
+            <div className="flex items-center gap-1.5">
+              <span className="w-3 h-3 flex items-center justify-center shrink-0" style={{ fontSize: 10 }}>📱</span>
+              <span className="text-xs" style={{ color: '#64748b', fontFamily: "'Open Sans', sans-serif" }}>Screen time</span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );
