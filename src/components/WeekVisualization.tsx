@@ -78,12 +78,67 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
     return hours % 1 === 0 ? `${hours}h` : `${hours.toFixed(1)}h`;
   };
 
-  // Top 3 categories get big circles, rest go to legend
-  const topStats = stats.slice(0, 3);
-  const restStats = stats.slice(3);
+  // Build a unified list: category stats + screen time inserted by percentage
+  const hasScreenTime = screenTimeHours > 0 || screenTimeMinutes > 0;
+  const totalScreenMins = screenTimeHours * 60 + screenTimeMinutes;
+  const totalWeekMins = 168 * 60;
+  const screenPct = Math.round((totalScreenMins / totalWeekMins) * 100);
+  const screenHrs = totalScreenMins / 60;
+  const screenLabel = screenHrs % 1 === 0 ? `${screenHrs}h` : `${screenHrs.toFixed(1)}h`;
 
-  // Circle sizes for the top 3
+  // Merge screen time into stats by percentage position
+  type DisplayItem = { type: 'category'; stat: typeof stats[number] } | { type: 'screen' };
+  const allItems: DisplayItem[] = stats.map(s => ({ type: 'category' as const, stat: s }));
+  if (hasScreenTime) {
+    const insertIdx = allItems.findIndex(item => item.type === 'category' && item.stat.percentage < screenPct);
+    if (insertIdx === -1) {
+      allItems.push({ type: 'screen' });
+    } else {
+      allItems.splice(insertIdx, 0, { type: 'screen' });
+    }
+  }
+
+  // Top 3 items get big circles, rest go to legend
+  const topItems = allItems.slice(0, 3);
+  const restItems = allItems.slice(3);
   const circleSizes = [160, 130, 100];
+
+  const renderScreenTimeLegend = (delay: number) => (
+    <motion.div
+      key="screen-time"
+      initial={{ opacity: 0, x: 20 }}
+      animate={{ opacity: 1, x: 0 }}
+      transition={{ delay }}
+      className="flex items-center gap-2"
+    >
+      <span className="w-5 h-5 flex items-center justify-center shrink-0" style={{ fontSize: 14 }}>📱</span>
+      <span className="text-sm tabular-nums font-bold text-foreground">{screenPct}%</span>
+      <span className="text-xs tabular-nums text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{screenLabel}</span>
+      <span className="text-sm text-muted-foreground italic" style={{ fontFamily: "'Open Sans', sans-serif" }}>Screen time</span>
+    </motion.div>
+  );
+
+  const renderScreenTimeCircle = (size: number, delay: number) => (
+    <motion.div
+      key="screen-time"
+      initial={{ scale: 0 }}
+      animate={{ scale: 1 }}
+      transition={{ delay, type: 'spring', stiffness: 200 }}
+      className="rounded-full flex flex-col items-center justify-center font-bold shadow-lg"
+      style={{
+        width: size,
+        height: size,
+        backgroundColor: '#64748b',
+        border: '2px dashed #94a3b8',
+        color: 'white',
+      }}
+    >
+      <span className="leading-none" style={{ fontSize: size * 0.22 }}>📱</span>
+      <span className="leading-none mt-0.5" style={{ fontSize: size * 0.24 }}>{screenPct}%</span>
+      <span className="opacity-80 leading-tight" style={{ fontSize: size * 0.09, fontFamily: "'Open Sans', sans-serif" }}>{screenLabel}</span>
+      <span className="opacity-90" style={{ fontSize: size * 0.1, fontFamily: "'Open Sans', sans-serif" }}>Screen time</span>
+    </motion.div>
+  );
 
   return (
     <div className="space-y-6">
@@ -132,112 +187,58 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
 
           {/* Right: Category circles + legend */}
           <div className="flex flex-col items-center justify-center gap-4" style={{ minWidth: 200 }}>
-            {/* Big circles for top categories */}
-            {topStats.map((stat, i) => (
-              <motion.div
-                key={stat.name}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.3 + i * 0.12, type: 'spring', stiffness: 200 }}
-                className="rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg"
-                style={{
-                  width: circleSizes[i],
-                  height: circleSizes[i],
-                  backgroundColor: stat.color,
-                  border: 'none',
-                }}
-              >
-                <span
-                  className="leading-none"
-                  style={{ fontSize: circleSizes[i] * 0.28 }}
-                >
-                  {stat.percentage}%
-                </span>
-                <span
-                  className="opacity-80 leading-tight"
-                  style={{
-                    fontSize: circleSizes[i] * 0.09,
-                    fontFamily: "'Open Sans', sans-serif",
-                  }}
-                >
-                  {formatHours(stat.slots)}
-                </span>
-                <span
-                  className="opacity-90"
-                  style={{
-                    fontSize: circleSizes[i] * 0.11,
-                    fontFamily: "'Open Sans', sans-serif",
-                  }}
-                >
-                  {stat.name}
-                </span>
-              </motion.div>
-            ))}
-
-            {/* Small legend for remaining categories */}
-            {restStats.length > 0 && (
-              <div className="mt-2 space-y-2">
-                {restStats.map((stat, i) => (
-                  <motion.div
-                    key={stat.name}
-                    initial={{ opacity: 0, x: 20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    transition={{ delay: 0.6 + i * 0.06 }}
-                    className="flex items-center gap-2"
-                  >
-                    <div
-                      className="w-5 h-5 rounded-full shrink-0"
-                      style={{ backgroundColor: stat.color }}
-                    />
-                    <span
-                      className="text-sm tabular-nums font-bold text-foreground"
-                    >
-                      {stat.percentage}%
-                    </span>
-                    <span
-                      className="text-xs tabular-nums text-muted-foreground"
-                      style={{ fontFamily: "'Open Sans', sans-serif" }}
-                    >
-                      {formatHours(stat.slots)}
-                    </span>
-                    <span
-                      className="text-sm text-muted-foreground"
-                      style={{ fontFamily: "'Open Sans', sans-serif" }}
-                    >
-                      {stat.name}
-                    </span>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-
-            {/* Screen time (separate from 100% breakdown) */}
-            {(screenTimeHours > 0 || screenTimeMinutes > 0) && (() => {
-              const totalScreenMins = screenTimeHours * 60 + screenTimeMinutes;
-              const totalWeekMins = 168 * 60;
-              const screenPct = Math.round((totalScreenMins / totalWeekMins) * 100);
-              const screenHrs = totalScreenMins / 60;
-              const screenLabel = screenHrs % 1 === 0 ? `${screenHrs}h` : `${screenHrs.toFixed(1)}h`;
+            {/* Big circles for top items */}
+            {topItems.map((item, i) => {
+              if (item.type === 'screen') {
+                return renderScreenTimeCircle(circleSizes[i], 0.3 + i * 0.12);
+              }
+              const stat = item.stat;
               return (
                 <motion.div
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.8 }}
-                  className="mt-4 pt-4 border-t border-dashed"
-                  style={{ borderColor: 'hsl(var(--border))' }}
+                  key={stat.name}
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.3 + i * 0.12, type: 'spring', stiffness: 200 }}
+                  className="rounded-full flex flex-col items-center justify-center text-white font-bold shadow-lg"
+                  style={{
+                    width: circleSizes[i],
+                    height: circleSizes[i],
+                    backgroundColor: stat.color,
+                    border: 'none',
+                  }}
                 >
-                  <div className="flex items-center gap-2">
-                    <span style={{ fontSize: 18 }}>📱</span>
-                    <span className="text-sm font-bold text-foreground">{screenPct}%</span>
-                    <span className="text-xs tabular-nums text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{screenLabel}</span>
-                    <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>Screen time</span>
-                  </div>
-                  <p className="text-[10px] text-muted-foreground mt-0.5 ml-7" style={{ fontFamily: "'Open Sans', sans-serif" }}>
-                    of your week on your phone
-                  </p>
+                  <span className="leading-none" style={{ fontSize: circleSizes[i] * 0.28 }}>{stat.percentage}%</span>
+                  <span className="opacity-80 leading-tight" style={{ fontSize: circleSizes[i] * 0.09, fontFamily: "'Open Sans', sans-serif" }}>{formatHours(stat.slots)}</span>
+                  <span className="opacity-90" style={{ fontSize: circleSizes[i] * 0.11, fontFamily: "'Open Sans', sans-serif" }}>{stat.name}</span>
                 </motion.div>
               );
-            })()}
+            })}
+
+            {/* Legend for remaining items */}
+            {restItems.length > 0 && (
+              <div className="mt-2 space-y-2">
+                {restItems.map((item, i) => {
+                  if (item.type === 'screen') {
+                    return renderScreenTimeLegend(0.6 + i * 0.06);
+                  }
+                  const stat = item.stat;
+                  return (
+                    <motion.div
+                      key={stat.name}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 + i * 0.06 }}
+                      className="flex items-center gap-2"
+                    >
+                      <div className="w-5 h-5 rounded-full shrink-0" style={{ backgroundColor: stat.color }} />
+                      <span className="text-sm tabular-nums font-bold text-foreground">{stat.percentage}%</span>
+                      <span className="text-xs tabular-nums text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{formatHours(stat.slots)}</span>
+                      <span className="text-sm text-muted-foreground" style={{ fontFamily: "'Open Sans', sans-serif" }}>{stat.name}</span>
+                    </motion.div>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </div>
       </div>
