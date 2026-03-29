@@ -13,7 +13,7 @@ const timeOptions = TIME_SLOTS.filter((_, i) => i % 2 === 0 || true); // all hal
 export default function SleepSettingsPanel({ settings, onChange }: Props) {
   return (
     <div className="bg-card rounded-lg border p-4 space-y-4">
-      <h3 className="font-display font-semibold text-foreground">🌙 Sleep Schedule</h3>
+      <h3 className="font-display font-semibold text-foreground">🌙 Sleep schedule</h3>
       <p className="text-sm text-muted-foreground -mt-2">Set your usual sleep and wake times to get started.</p>
       <div className="flex items-center gap-3 flex-wrap">
         <Switch
