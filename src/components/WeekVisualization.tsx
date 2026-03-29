@@ -248,5 +248,6 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
           </div>
         </div>
       </div>
+    </div>
   );
 }
