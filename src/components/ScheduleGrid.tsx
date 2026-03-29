@@ -316,6 +316,7 @@ export default function ScheduleGrid({ schedule, categories, onChange, increment
                       const newSchedule = { ...schedule };
                       const slots = [...newSchedule[showAutocomplete.day as keyof ScheduleData]];
                       slots[showAutocomplete.slot] = name;
+                      if (increment === 60 && showAutocomplete.slot + 1 < 48) slots[showAutocomplete.slot + 1] = name;
                       newSchedule[showAutocomplete.day as keyof ScheduleData] = slots;
                       onChange(newSchedule);
                       setShowAutocomplete(null);
