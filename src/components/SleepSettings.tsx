@@ -25,6 +25,7 @@ export default function SleepSettingsPanel({ settings, onChange, onApply }: Prop
         <Label className="text-sm text-muted-foreground">Same every day</Label>
         {settings.sameEveryDay && (
           <>
+            <div className="h-5 w-px bg-border" />
             <TimeSelect label="Sleep at" value={settings.default.sleep} onChange={(v) => onChange({ ...settings, default: { ...settings.default, sleep: v } })} />
             <TimeSelect label="Wake at" value={settings.default.wake} onChange={(v) => onChange({ ...settings, default: { ...settings.default, wake: v } })} />
           </>
