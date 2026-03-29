@@ -28,10 +28,12 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
 
   const generateImage = async (): Promise<string> => {
     if (!vizRef.current) return '';
-    setIsExporting(true);
+    // Show export-only elements via CSS class, no React re-render needed
+    vizRef.current.classList.add('exporting');
+    // Small delay for paint
     await new Promise(r => setTimeout(r, 50));
     const dataUrl = await toPng(vizRef.current, { pixelRatio: 2, backgroundColor: '#ffffff' });
-    setIsExporting(false);
+    vizRef.current.classList.remove('exporting');
     return dataUrl;
   };
 
