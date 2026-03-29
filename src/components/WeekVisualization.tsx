@@ -133,7 +133,7 @@ export default function WeekVisualization({ schedule, categories, screenTimeHour
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <h2 className="font-display text-2xl font-bold text-foreground">Your Week, Visualised</h2>
+        <h2 className="font-display text-2xl font-bold text-foreground">My week</h2>
         <Button variant="outline" size="sm" onClick={handleDownload} className="gap-1.5">
           <Download className="w-4 h-4" /> Save
         </Button>
